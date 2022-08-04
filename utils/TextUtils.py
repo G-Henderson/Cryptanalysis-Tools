@@ -5,16 +5,12 @@ class TextUtils:
     Class for general text manipulation
     """
 
-    def __init__(self, my_message) -> None:
-        # Setup text variables
-        self.original_text = my_message
-        self.message = self.getOriginal_text()
-
+    def __init__(self) -> None:
         # Create a alphabet variables
         self.ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 
-    def remove_punctuation(self) -> str:
+    def remove_punctuation(self, message) -> str:
         """
         Removes all the spaces from the message (leaves spaces)
         """
@@ -23,31 +19,41 @@ class TextUtils:
         temp = ""
 
         # Iterate through message
-        for i in range(len(self.text)):
+        for i in range(len(message)):
             # Get the current character
-            current_char = self.text[i]
+            current_char = message[i]
             # Check if current char is in alphabet or is a space.
             if (current_char.lower() in self.ALPHABET) or (current_char == " "):
                 temp += current_char
 
         # Transfer the result stored in the temp variable into the message variable
-        self.message = temp
+        result = temp
 
         # Return the message
-        return self.message
+        return result
 
 
-    def remove_spaces(self) -> str:
+    def remove_spaces(self, message) -> str:
         """
         Removes all the spaces from the message (leaves punctuation)
         """
 
         # Remove the spaces from the text
-        self.message = self.message.replace(" ", "")
+        result = message.replace(" ", "")
 
         # Return the text
-        return self.message
+        return result
 
-    def getOriginal_text(self) -> str:
-        # Return the value original text before manipulation
-        return self.original_text
+    def only_letters(self, message) -> str:
+        """
+        Removes all characters that aren't letters
+        """
+
+        # Remove the spaces from the text
+        result = self.remove_spaces(message)
+
+        # Remove punctuation
+        result = self.remove_punctuation(result)
+
+        # Return the text
+        return result

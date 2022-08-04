@@ -1,4 +1,5 @@
 import json
+from utils.FitnessTest import FitnessTest
 
 def getChars(ctext):
     pass
@@ -15,7 +16,10 @@ def loadCipherText():
 
 def main():
     ctext = loadCipherText()
-    print(getChars(ctext))
+    # print(ctext)
+
+    ft = FitnessTest()
+    print(ft.ngram_score("HELLOWORLD"))
 
 if __name__ == "__main__":
     main()
