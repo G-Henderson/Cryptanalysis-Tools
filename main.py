@@ -39,7 +39,7 @@ def main():
     # Test the caesar solver with known shift
     mCaesarSolver = CaesarSolver()
     print("\nTesting the caesar solver with known shift...")
-    if (mCaesarSolver.solve("dbcbka qeb bxpq txii lc qeb zxpqib", 3) == "DEFENDTHEEASTWALLOFTHECASTLE"):
+    if (mCaesarSolver.solve("abcbka qeb bxpq txii lc qeb zxpqib", 3) == "DEFENDTHEEASTWALLOFTHECASTLE"):
         print("Passed")
     else:
         print("Failed")
@@ -70,6 +70,7 @@ def main():
     print("")
 
     ### Start the main program ###
+    #print(mCaesarSolver.solve(loadCipherText()))
 
 if __name__ == "__main__":
     main()
