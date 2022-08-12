@@ -5,6 +5,7 @@ from utils.FitnessTest import FitnessTest
 from utils.solvers.caesar_solver import CaesarSolver
 from utils.solvers.affine_solver import AffineSolver
 from utils.solvers.simple_substitution_solver import SimpleSubSolver
+from utils.solvers.columnar_transposition_solver import ColumnarTranspositionSolver as ColTransSolver
 
 def loadCipherText():
     file_path = "cipher-texts/2021.json"

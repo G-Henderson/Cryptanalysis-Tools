@@ -1,7 +1,7 @@
 from utils.TextUtils import TextUtils
 from utils.FitnessTest import FitnessTest
 
-class CaesarSolver:
+class ColumnarTranspositionSolver:
 
     """
     Class for decrypting ciphertexts encrypted using the Caesar cipher
@@ -11,7 +11,7 @@ class CaesarSolver:
         self.TU = TextUtils()
         self.mFitTester = FitnessTest()
 
-    def solve(self, message, shift=None) -> str:
+    def solve(self, message, pattern=None) -> str:
         """
         Function for decrypting caesar ciphers
         """
@@ -26,38 +26,12 @@ class CaesarSolver:
         decoded_msg = ""
 
         # Check whether the shift is known
-        if (shift != None):
+        if (pattern != None):
             # Decode the message using the known shift
-            decoded_msg = self.perform_shift(message, shift)
+            pass
 
         else:
             # Try solving the cipher using brute force
-            decoded_msg = self.brute_force(message)
+            pass
 
         return decoded_msg
-
-    def perform_shift(self, message, shift) -> str:
-        output = ""
-        for i in range(len(message)):
-            char = message[i]
-            output += chr((ord(char) + shift-65) % 26 + 65)
-
-        return output
-
-    def brute_force(self, message) -> str:
-        best_score = -99e9
-        best_msg = ""
-        for shift in range(1,26):
-            # Get the shifted message
-            curr_msg = self.perform_shift(message, shift)
-
-            # Get a score for that message
-            curr_score = self.mFitTester.ngram_score(curr_msg)
-
-            # Check if score is better than previous best
-            if (curr_score > best_score):
-                # Update the best score and best message
-                best_score = curr_score
-                best_msg = curr_msg
-
-        return best_msg
