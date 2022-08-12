@@ -4,6 +4,7 @@ from utils.FitnessTest import FitnessTest
 
 from utils.solvers.caesar_solver import CaesarSolver
 from utils.solvers.affine_solver import AffineSolver
+from utils.solvers.simple_substitution_solver import SimpleSubSolver
 
 def loadCipherText():
     file_path = "cipher-texts/2021.json"
@@ -62,6 +63,21 @@ def main():
     # Test the affine solver with unknown key
     print("\nTesting the affine solver with unknown key...")
     if (mAffineSolver.solve("knqnok gwn nbdg pbii rq gwn hbdgin") == "DEFENDTHEEASTWALLOFTHECASTLE"):
+        print("Passed")
+    else:
+        print("Failed")
+
+    # Test the simple substitution solver with known key
+    mSimpSubSolver = SimpleSubSolver()
+    print("\nTesting the simple substitution solver with known key...")
+    if (mSimpSubSolver.solve("cjmjvc gsj jibg rill om gsj dibglj", "ifdcjmwskxzltvohynbgupreqa") == "DEFENDTHEEASTWALLOFTHECASTLE"):
+        print("Passed")
+    else:
+        print("Failed")
+
+    # Test the simple substitution solver with unknown key
+    print("\nTesting the simple substitution solver with unknown key...")
+    if (mSimpSubSolver.solve("SOWFBRKAWFCZFSBSCSBQITBKOWLBFXTBKOWLSOXSOXFZWWIBICFWUQLRXINOCIJLWJFQUNWXLFBSZXFBTXAANTQIFBFSFQUFCZFSBSCSBIMWHWLNKAXBISWGSTOXLXTSWLUQLXJBUUWLWISTBKOWLSWGSTOXLXTSWLBSJBUUWLFULQRTXWFXLTBKOWLBISOXSSOWTBKOWLXAKOXZWSBFIQSFBRKANSOWXAKOXZWSFOBUSWJBSBFTQRKAWSWANECRZAWJ") == "THESIMPLESUBSTITUTIONCIPHERISACIPHERTHATHASBEENINUSEFORMANYHUNDREDSOFYEARSITBASICALLYCONSISTSOFSUBSTITUTINGEVERYPLAINTEXTCHARACTERFORADIFFERENTCIPHERTEXTCHARACTERITDIFFERSFROMCAESARCIPHERINTHATTHECIPHERALPHABETISNOTSIMPLYTHEALPHABETSHIFTEDITISCOMPLETELYJUMBLED"):
         print("Passed")
     else:
         print("Failed")

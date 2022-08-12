@@ -70,7 +70,7 @@ class FitnessTest:
         self.ngram_floor_value = math.log10(0.01 / self.ngram_appearances)
 
 
-    def ngram_score(self, message: str,) -> float:
+    def ngram_score(self, message: str) -> float:
         """
         An algorithm to rate the fitness of a piece of text using ngrams
         """
@@ -81,6 +81,7 @@ class FitnessTest:
         message = message.upper()
         # Remove the spaces and punctuation
         message = self.my_textutils.only_letters(message)
+
         for x in range(len(message)-self.len_ngram+1):
             # Get the current ngram
             curr_ngram = message[x:x+self.len_ngram]
@@ -94,3 +95,34 @@ class FitnessTest:
 
         # Return the score
         return score
+
+    def get_ic(self, message: str) -> float:
+        """
+        A function to determine the index of coincidence of a ciphertext
+        """
+
+        # Set the message to lowercase
+        message = message.lower()
+
+        # Remove any characters not in the alphabet
+        message = self.my_textutils.only_letters(message)
+
+        # Create an empty list to hold the amount of times each letter appears
+        frequencies = [0 for i in range(26)]
+
+        # Create a variable to contain the length of the message
+        msg_len = len(message)
+
+        # Iterate through the message, to calculate the frequencies
+        for char in message:
+            frequencies[ord(char) - 97] += 1
+
+        total = 0
+        for i in range(26):
+            total = total + frequencies[i] * (frequencies[i] - 1)
+
+        # Calculate the index of coincidence (ic)
+        ic = total / (msg_len * (msg_len-1))
+
+        # Return the ic
+        return ic
