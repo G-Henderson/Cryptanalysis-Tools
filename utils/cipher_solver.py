@@ -1,7 +1,7 @@
 from utils.TextUtils import TextUtils
 from utils.FitnessTest import FitnessTest
 
-class CipherSolver:
+class CipherSolver():
 
     """
     Template class for decrypting ciphertexts
@@ -11,7 +11,7 @@ class CipherSolver:
         self.TU = TextUtils()
         self.mFitTester = FitnessTest()
 
-    def solve(self, message, key=None) -> str:
+    def solve(self, message: str, key=None, keylen: int=None) -> str:
         """
         Function for decrypting the cipher
         """
@@ -28,7 +28,12 @@ class CipherSolver:
         # Check whether the shift is known
         if (key != None):
             # Decode the message using the known key
-            decoded_msg = self.manually(message, key)
+            decoded_msg = self.with_key(message, key)
+
+        # Check whether we're given a key length
+        elif (keylen != None):
+            # Try decoding the message with the known key length
+            decoded_msg = self.with_keylen(message, keylen)
 
         else:
             # Try solving the cipher using brute force
@@ -36,8 +41,11 @@ class CipherSolver:
 
         return decoded_msg
 
-    def manually(self, message, key):
+    def with_key(self, message: str, key) -> str:
         return ""
 
-    def brute_force(self, message):
+    def with_keylen(self, message: str, keylen: int) -> str:
+        return ""
+
+    def brute_force(self, message: str) -> str:
         return ""

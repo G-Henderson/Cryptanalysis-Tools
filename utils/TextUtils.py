@@ -10,7 +10,7 @@ class TextUtils:
         self.ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 
-    def remove_punctuation(self, message) -> str:
+    def remove_punctuation(self, message: str) -> str:
         """
         Removes all the spaces from the message (leaves spaces)
         """
@@ -33,7 +33,7 @@ class TextUtils:
         return result
 
 
-    def remove_spaces(self, message) -> str:
+    def remove_spaces(self, message: str) -> str:
         """
         Removes all the spaces from the message (leaves punctuation)
         """
@@ -44,7 +44,7 @@ class TextUtils:
         # Return the text
         return result
 
-    def only_letters(self, message) -> str:
+    def only_letters(self, message: str) -> str:
         """
         Removes all characters that aren't letters
         """

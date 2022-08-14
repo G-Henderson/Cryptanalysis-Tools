@@ -1,48 +1,19 @@
-from utils.TextUtils import TextUtils
-from utils.FitnessTest import FitnessTest
-
+from utils.cipher_solver import CipherSolver
 from random import randint, shuffle
 
-class SimpleSubSolver:
+class SimpleSubSolver(CipherSolver):
 
     """
     Class for decrypting ciphertexts encrypted using the Simple Substitution cipher
     """
 
     def __init__(self) -> None:
-        self.TU = TextUtils()
-        self.mFitTester = FitnessTest()
+        super().__init__()
 
         # Setup alphabet list
         self.ALPHABET = list(("abcdefghijklmnopqrstuvwxyz").upper())
 
-    def solve(self, message, key=None) -> str:
-        """
-        Function for decrypting simple substitution ciphers
-        """
-
-        # Remove anything that's not a letter
-        message = self.TU.only_letters(message)
-
-        # Make message uppercase
-        message = message.upper()
-        
-        # Setup empty variable for containing decoded message
-        decoded_msg = ""
-
-        # Check whether the shift is known
-        if (key != None):
-            # Decode the message using the known shift
-            decoded_msg = self.decrypt(message, key)
-
-        else:
-            # Try solving the cipher using brute force
-            decoded_msg = self.hill_climb(message)
-
-        # Return the decoded message
-        return decoded_msg
-
-    def decrypt(self, message: str, key: str) -> str:
+    def with_key(self, message: str, key: str) -> str:
         """
         Function for dcecryting ciphertext from known key
         """
@@ -67,7 +38,7 @@ class SimpleSubSolver:
         # Return the decrypted message
         return decrypt
 
-    def hill_climb(self, message) -> str:
+    def brute_force(self, message) -> str:
         # Create random key to start with
         best_key = self.ALPHABET.copy()
         # Set the best score to really low number
@@ -82,7 +53,7 @@ class SimpleSubSolver:
             # Randomise the parent key
             shuffle(parent_key)
             # Decrypt using the new parent key
-            decrypt = self.decrypt(message, "".join(parent_key))
+            decrypt = self.with_key(message, "".join(parent_key))
             # Get the fitness score for decryption as the benchmark
             parent_score = self.mFitTester.ngram_score(decrypt)
 
@@ -100,7 +71,7 @@ class SimpleSubSolver:
                 child_key[swap_a], child_key[swap_b] = child_key[swap_b], child_key[swap_a]
 
                 # Try deciphering with the child key and then score it using ngrams
-                decrypt = self.decrypt(message, "".join(child_key))
+                decrypt = self.with_key(message, "".join(child_key))
                 child_score = self.mFitTester.ngram_score(decrypt)
 
                 # Check if it has a better fitness
@@ -122,7 +93,7 @@ class SimpleSubSolver:
                 best_key = parent_key.copy()
 
         # Return the decrypt using the best key
-        return self.decrypt(message, "".join(best_key))
+        return self.with_key(message, "".join(best_key))
 
 
 
