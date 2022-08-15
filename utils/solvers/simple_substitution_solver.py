@@ -55,7 +55,7 @@ class SimpleSubSolver(CipherSolver):
             # Decrypt using the new parent key
             decrypt = self.with_key(message, "".join(parent_key))
             # Get the fitness score for decryption as the benchmark
-            parent_score = self.mFitTester.ngram_score(decrypt)
+            parent_score = self.quadgram_scorer.ngram_score(decrypt)
 
             # Perform the hill climb
             iter_since_improv = 0
@@ -72,7 +72,7 @@ class SimpleSubSolver(CipherSolver):
 
                 # Try deciphering with the child key and then score it using ngrams
                 decrypt = self.with_key(message, "".join(child_key))
-                child_score = self.mFitTester.ngram_score(decrypt)
+                child_score = self.quadgram_scorer.ngram_score(decrypt)
 
                 # Check if it has a better fitness
                 if (child_score > parent_score):

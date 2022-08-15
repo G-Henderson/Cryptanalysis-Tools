@@ -1,4 +1,3 @@
-from itertools import permutations
 from utils.cipher_solver import CipherSolver
 
 class ColumnarTranspositionSolver(CipherSolver):
@@ -47,7 +46,7 @@ class ColumnarTranspositionSolver(CipherSolver):
             decrypt = self.with_key(message, current_permutation)
 
             # Score the decryption
-            current_score = self.mFitTester.ngram_score(decrypt)
+            current_score = self.quadgram_scorer.ngram_score(decrypt)
 
             # Check if it is a new best score
             if (current_score > best_score):
@@ -68,7 +67,7 @@ class ColumnarTranspositionSolver(CipherSolver):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt
-            current_score = self.mFitTester.ngram_score(decrypt)
+            current_score = self.quadgram_scorer.ngram_score(decrypt)
 
             # See if we have a new best score
             if (current_score > best_score):
@@ -124,6 +123,10 @@ class ColumnarTranspositionSolver(CipherSolver):
         return grid
 
     def get_permutations(self, list_digits: list) -> list:
+        """
+        Function to find all permutations of a string (that has been converted to a list)
+        """
+
         # Check that there are digits to find permutations of
         if (len(list_digits) == 0):
             return []

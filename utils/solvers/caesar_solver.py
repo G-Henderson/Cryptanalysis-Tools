@@ -25,7 +25,7 @@ class CaesarSolver(CipherSolver):
             curr_msg = self.with_key(message, shift)
 
             # Get a score for that message
-            curr_score = self.mFitTester.ngram_score(curr_msg)
+            curr_score = self.quadgram_scorer.ngram_score(curr_msg)
 
             # Check if score is better than previous best
             if (curr_score > best_score):

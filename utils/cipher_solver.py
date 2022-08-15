@@ -1,5 +1,5 @@
 from utils.TextUtils import TextUtils
-from utils.FitnessTest import FitnessTest
+from utils.ngrams_scorer import NgramScorer, NgramFiles
 
 class CipherSolver():
 
@@ -9,7 +9,7 @@ class CipherSolver():
 
     def __init__(self) -> None:
         self.TU = TextUtils()
-        self.mFitTester = FitnessTest()
+        self.quadgram_scorer = NgramScorer(NgramFiles.QUADGRAM_FILE)
 
     def solve(self, message: str, key=None, keylen: int=None) -> str:
         """
