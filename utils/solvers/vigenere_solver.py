@@ -57,16 +57,120 @@ class VigenereSolver(CipherSolver):
     def with_keylen(self, message: str, keylen: int) -> str:
         best_list = BestList()
 
-        for i in range(keylen):
-            for j in range(len(self.ALPHABET)):
-                key = 
+        # Find first 3 letters of key using permutations
+        for perm in self.get_permutations(list(self.ALPHABET), 3):
+            # Get the current key and pad with A's to make right keylen
+            temp_key = ''.join(perm) + 'A' * (keylen - len(perm))
+            # Try decrypting the with current key
+            temp_decrypt = self.with_key(message, temp_key)
+            # Get the fitness of the decrypted message using trigrams
+            score = 0
+            for i in range(0, len(message), keylen):
+                score += self.trigram_scorer.ngram_score(temp_decrypt[i:i+3])
+
+            # Add the score and key to the best list
+            best_list.add((score, "".join(perm)))
+
+        next_best_list = BestList()
+        # Try finding the rest of the key
+        for i in range(0, keylen-3):
+            for k in range(100):
+                for m in self.ALPHABET:
+                    key = best_list[k][1] + m
+                    full_key = key + 'A' * (keylen - len(key))
+                    decrypt = self.with_key(message, full_key)
+
+                    score = 0
+                    for j in range(0, len(message), keylen):
+                        score += self.quadgram_scorer.ngram_score(decrypt[j:j+len(key)])
+
+                    next_best_list.add((score, key, decrypt[:30]))
+
+            # Overwrite the old best list
+            best_list = next_best_list
+            # Reset the new one
+            next_best_list = BestList()
+
+        # Get the first key from the best list as the parent
+        best_key = best_list[0][1]
+        # Decrypt with the first key
+        decrypt = self.with_key(message, best_key)
+        # Get the benchmark score by using the first decrypt
+        best_score = self.quadgram_scorer.ngram_score(decrypt)
+        # Try the top 100 best keys
+        for i in range(100):
+            # Decrypt the ciphertext with the current key
+            decrypt = self.with_key(message, best_list[i][1])
+            # Score the new decrypt message using quadgrams
+            score = self.quadgram_scorer.ngram_score(decrypt)
+            # Check if we have a new highest score
+            if score > best_score:
+                # Replace the best key and set the new highest score
+                best_key = best_list[i][1]
+                best_score = score
 
         # Return the decrypted message
-        return decrypt
+        print(best_key)
+        return self.with_key(message, best_key)
 
     def brute_force(self, message: str) -> str:
-        self.get_period(message)
-        return super().brute_force(message)
+        # Setup variables to store the best key length
+        # and highest score
+        best_keylen = 0
+        best_score = -99e9
+
+        # Try key lengths of 3 up to 25
+        for keylen in range(3, 20):
+            # Decrypt using the current key length
+            decrypt = self.with_keylen(message, keylen)
+            # Score the current decrypt
+            score = self.quadgram_scorer.ngram_score(decrypt)
+
+            # Display progress message
+            print(f"Key length: {keylen}, Score: {score}, Decrypt: {decrypt[:30]}...")
+
+            # Check if it is a new highscore
+            if (score > best_score):
+                # Replace the best score and best key length
+                best_score = score
+                best_keylen = keylen
+
+        # Decrypt using the best key length
+        decrypt = self.with_keylen(message, best_keylen)
+
+        # Return the decrypt
+        return decrypt
+
+    def get_permutations(self, data, r: int=None):
+        my_permutations = []
+        
+        n = len(data)
+        if (r == None):
+            r = len(data)
+
+        indices = [i for i in range(n)]
+        cycles = [i for i in range(n, n-r, -1)]
+        
+        my_permutations.append([data[i] for i in indices[:r]])
+        
+        while n:
+            for i in range(r-1, -1, -1):
+                cycles[i] -= 1
+                
+                if cycles[i] == 0:
+                    indices[i:] = indices[i+1:] + indices[i:i+1]
+                    cycles[i] = n - i
+                    
+                else:
+                    j = cycles[i]
+                    indices[i], indices[-j] = indices[-j], indices[i]
+                    
+                    my_permutations.append([data[i] for i in indices[:r]])
+                    
+                    break
+            
+            else:
+                return my_permutations
 
     def get_period(self, message: str) -> int:
         # Find the I.C's of key lengths between 2 and 15
@@ -93,36 +197,3 @@ class VigenereSolver(CipherSolver):
             print(str(a)+":  "+str(average))
 
         return 0
-
-    def get_permutations(self, list_digits: list, perm_len: int=None) -> list:
-        """
-        Function to find all permutations of a string (that has been converted to a list)
-        """
-
-        # Check if given specific permutation length
-        if (perm_len == None):
-            perm_len = len(list_digits)
-
-        # Check that there are digits to find permutations of
-        if (len(list_digits) == 0):
-            return []
-
-        # Check whether only 1 permutation is possible
-        elif (len(list_digits) == 1):
-            return [list_digits]
-
-        # Else find the permutations of the digits given
-        else:
-            # Create an empty list to store the permutations
-            my_permutations = []
-
-            # Iterate through the list
-            for digit in list_digits:
-                other_digits = list_digits[:list_digits.index(digit)] + list_digits[list_digits.index(digit)+1:]
-
-                # Get all the permutations where the current digit is 1st
-                for permutation in self.get_permutations(other_digits):
-                    my_permutations.append([digit] + permutation)
-
-            # Return the list of permutations
-            return my_permutations

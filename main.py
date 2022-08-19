@@ -19,6 +19,12 @@ def loadCipherText():
 
     return ctext
 
+def get_message() -> str:
+    message = input("Please enter your ciphertext: ")
+
+    return message
+    
+
 def main():
 
     ### Run the tests ###
@@ -94,7 +100,7 @@ def main():
     #print(mColTransSolver.solve("ACEEESCNTSSRNIAHLATUEEONEEAKPISLRERSHDFESNGHSDYETCNEVATUSECIATBNETELEBOTDTBEFAWYSTDRRISTOILCYAOIACSSTMLTLEEHEEFRESNEIREWDTAULTHEUKHNTOCTONPETNYOWOAKIPANEELDEIGTENRTEATRIUNEEAAPHEITULTUNTTANGAAHGEANAILOEONULRTEYRNATTEPSBTEEHTANAELGHOSFIDNHOHENSCNELEMOSRSHORIESHNOEISEEBLOOCILDNOTINIATSOOOWSGNHLDONCDOOXYSILXENOIOTNCBEWTYTEHEIAHSETETYIFTHRTOIMIRUBNYPWLTCAYIUILHEIHMTLHINWNIARCAUNPOKONRECYPNGHDWOVRUEPONFESIHSAOBRVSDSTOTANBYODSNERLOTEYEISENUTSTCUSFOAARATEEWINKRIIENTLAOIOWETTNSWTSSODTSHVIFIHMSHWTTEFBRTLWEMRATERURENTURWAIHIBUSISANRCANATUACISHARISDOEIOSITFXETRPHSCFBLNATAYANOTHEOTMBAOEBONRCAEELKGOOTEAYNOESMENLIYIRFRDEITVDIMTHDEVTSANIHRYKODTGIFTRFEODIRSOIINHAMCDPOHLTEFITTOEFSFEIHOOPOIRWAENMXEGTRERAAOHOINYRTLTICRSOETNTAOALODLCINOPOEHURLVVRRICIICEOTALCTYHHSDFPICOOWNIAIPMSRELGSIATATENEGITAEOGEAOCSTEDOAOIISEEENEPOBUHOCOTNDTRWASTHIREEYWNOMNEEYRTHEREIBDCSSSTREMIPYSGUIDBUEREAHETITLCCTTLDWOEEEULHHLEORCCSEHNSVREMRBEREISOIUNLTSAEAOVHIIPWDOPNUDESPSTNNSAEATUNAVFARWACAONDAYBNEIVAHLCYMSEIDHRSOMEHIFURSSTVLURETTRITRUEETISLTHCLOPRIHSEIFLIENFFGSOIOAIHNDIASHEDAFGNESMXSEKBADHELAPOPAEYSADQOHMCEPTSCABTSSAGATANWMTIHRAFTLTDSOEFALHVTODCNTNPLEGMGFLINSPNKJAORNATSTTIATAHARGRRETTTAWMEEETHLIWVEBRRSWFNYTEOALRSITFESENITFNNOETOYNRAASNSAEPEVEOENWLRSLSRNGLDYTOTOYEEOWEAOLVCEETIHRWOTMELERTTINSOUGNIROSERRTWEULSFOEHEOEMUSUCPELMFNTAAUISYHLPMFDIAIRLGPWEFEHIDPOHTBAEAYOALOSDESWOSRETNTGONIEHOONTEERWOEACHFNESBNNSRERNRTEHEAHILYENKENLTDCENBVOCPOEFRCUWTUENEWEOSTEENENIATIIHSTEDEMERGAODRESAUTIWETENSSAARMEYMNEEFMHGIIOOOFMSGHMPRTIETFEIIRWAOEUXDTTYTACLRPHTAEIIHHHCANSKATSOOUONFOEEHUOYWYRYDOLEEHETHSLNAIFTEEHDELTIETRETNLTERNMRCVEOETEAEIDEGNAENOOBEKAWUBOTIEFOOKTNDRIUETAROIUYLTMSWIERYUTRLTENNKITEUVETDETSLROILGRLSHAOITEELUSIUHKAESMNEASAEOOSTOYSIIDAYSHRSITASILAATOALLGONALGIASISOSDUUTASANTEUSPNPNEIPNHOEOOCWEETRHREVAPFESNAAETSCIUTEHYRRBIAMNAESWOTRF", "german"))
 
     mVigenereSolver = VigenereSolver()
-    print(mVigenereSolver.solve("iswxvibjexiggbocewkbjeviggqs", "fortification"))
+    print(mVigenereSolver.solve("Neidy, V ys ffdeq, yth Z mm ecgpck nbr yyiq wuw O lrhe ockr vjiycj xf fhr yxgymebjukzetf. Boh Z po fmsiktiae zs lbsrr ysdqoac? O ed denjrc, iqayje lfbiae zlrf ohp uzvdlbpjw nuly doru eozczlzzg n zox darr pkpvhaar lsi ye gm zetwlr quse. Fhr exslb hrpk mj srryz, flf ig dkice lvik xyqrr gy e uumvlowyunt pkxldn bl hvvmkvlm ANUI pgvlvds fcbiefy-fgd cvmrf mt, eep eict xyq Cbjj Ard Fvyror ungcxgvbt cgri uaefl'z wvqm gm hi xuvvlm qloh oyio. Zr ybs jse'f hntk eektugtk war zc zs narx mt, xyqn zyefv koh auycp srlj smqr fmsi eqwogkw war zc zs kdavl at? Nq rrakmmqd n qzetw os kgxvdinj lvfy Lbljse m cbsvpv af jckoj mgb rnek yitfz qrwe n eusu qxrpimjq fbp zlvy, aab clzxe gfk jzdsg dka kqxgq gvv deyyzmmqll qoqgxe, vr cslxd oc g kfad rvkvtusr duv pauae grrxyfry xf frl ru afdk bsz aymt gfkc rde gcrpzzg hq. O lrhe nrzetteq rni wurfr oxvy fems xyq bnril ja ybs iee eer unek U mryt. M nauyb biik dryxpp xixc zs bzoj unek \"fhr exirf mnrzii\" descxw ka, aab O wlepraz cfg wvjr arzt gm qrfi tbm. Zlv deppamke dbl'z rvqd gm qrfi mhan xf nrryq xyus blk; mw fhrw nemq dblk sld iabagkuoa rxezziae ur smsva imgteeq, zlvk sumapu ne sgti. Dk cbjrirsurq niiq hntk rzokaysiu fhvq lmcq Tuc Rmxttumawv Ooaqvmimcl, zkgrgsr ml ayqrr rni gmprpy avde smaru. Fhnr sebqs vr yslzd n jux darr gstiqsfgbi ktaa gz jzdsg jusbe, bhr esl zeicx oeaw jfkvv eozczlzzg ygqi ktif kokyf lryj. M ymvr qkx lb a fciyiq oajorv eyfrkq ja tuc zvrunrcy grz grr ggtqsf ru gree sgrij mnq qkru ye gfkmi mtgcstke ag bkgzbhrporx. Uf lma tfung rnid fhrpk, xyqn V uopc ohraq lfi tuce eiq grrzmes oa. Kgcsq tuce gfglq jusb mt gfk FFES pmjisdeniorx suvbk ej ieyj oj ktel lkiu fo opawy gp gfkmi ekvjrw. Rxl gfk fvet, Wmjmv"))
 
     ### End of tests ###
     print("")

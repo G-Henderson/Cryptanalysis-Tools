@@ -1,5 +1,6 @@
 from utils.TextUtils import TextUtils
 from utils.ngrams_scorer import NgramScorer, NgramFiles
+from utils.stat_measurer import StatMeasurer
 
 class CipherSolver():
 
@@ -10,6 +11,7 @@ class CipherSolver():
     def __init__(self) -> None:
         self.TU = TextUtils()
         self.quadgram_scorer = NgramScorer(NgramFiles.QUADGRAM_FILE)
+        self.stat_measurer = StatMeasurer()
 
     def solve(self, message: str, key=None, keylen: int=None) -> str:
         """

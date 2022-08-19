@@ -1,0 +1,2 @@
+- Type m to enter a new message
+- Type a for autosolve
