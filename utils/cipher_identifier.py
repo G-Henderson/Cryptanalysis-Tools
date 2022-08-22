@@ -11,8 +11,8 @@ class CipherIdentifier:
         self.TU = TextUtils()
 
         # Setup cipher variables
-        self.SUBSTITUTION = 1
-        self.TRANSPOSITION = 2
+        self.SUBSTITUTION = "substitution"
+        self.TRANSPOSITION = "transposition"
 
         # Setup monogram fitness scorer
         self.monogram_scorer = NgramScorer(NgramFiles.MONOGRAM_FILE)
@@ -23,7 +23,7 @@ class CipherIdentifier:
     def setMessage(self, message: str) -> None:
         self.message = message
 
-    def identify(self, message: str=None):
+    def identify(self, message: str=None) -> str:
         # Look at number of characters
         
         # Work out if it is transposition
@@ -32,7 +32,9 @@ class CipherIdentifier:
 
         
 
-    def is_transposition(self, message) -> int:
+        
+
+    def is_transposition(self, message: str) -> bool:
         # Get rid of any characters that aren't letters
         message = self.TU.only_letters(message)
         # Make all letters uppercase
