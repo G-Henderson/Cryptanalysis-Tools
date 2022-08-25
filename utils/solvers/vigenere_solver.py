@@ -109,8 +109,10 @@ class VigenereSolver(CipherSolver):
                 best_key = best_list[i][1]
                 best_score = score
 
+        # Print the best key for that length
+        print(f"\nBest key of length {len(best_key)} was '{best_key}'.")
+
         # Return the decrypted message
-        print(best_key)
         return self.with_key(message, best_key)
 
     def brute_force(self, message: str) -> str:

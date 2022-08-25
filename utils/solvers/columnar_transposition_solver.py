@@ -61,13 +61,22 @@ class ColumnarTranspositionSolver(CipherSolver):
         return decrypt
 
     def brute_force(self, message: str) -> str:
+        # Setup empty variable to store the best scoring message
         best_message = ""
+        # Setup really low score as benchmark
         best_score = -99e9
+        # Insert a new line
+        print("")
+
+        # Iterate through key lengths between 2 and 9
         for keylen in range(2,10):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt
             current_score = self.quadgram_scorer.ngram_score(decrypt)
+
+            # Print message to show progress
+            print(f"Key length: {keylen}, Score: {current_score}, Decrypt: {decrypt[:30]}...")
 
             # See if we have a new best score
             if (current_score > best_score):

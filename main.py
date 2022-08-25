@@ -10,50 +10,131 @@ from utils.solvers.vigenere_solver import VigenereSolver
 
 from utils.stat_measurer import StatMeasurer
 from utils.ngrams_scorer import NgramScorer, NgramFiles
+from utils.test import Test
 
-def loadCipherText():
-    file_path = "cipher-texts/2021.json"
-    my_file = open(file_path)
-    my_obj = json.load(my_file)
-    my_file.close()
-
-    ctext = my_obj["challenges"][0]["ctext"]
-
-    return ctext
 
 def get_message() -> str:
     message = input("Please enter your ciphertext: ")
 
     return message
 
-def main():
+
+def go(message: str=None) -> str:
+    if (message == None):
+        message = get_message()
+
+    # Get the type of cipher
+    cipher_identifier, cipher_type = identify(message)
+
+    # Check if it is a transposition cipher
+    if (cipher_type == cipher_identifier.TRANSPOSITION):
+        # Setup the solver
+        transposition_solver = ColTransSolver()
+        # Try and solve it
+        decrypt = transposition_solver.solve(message)
+
+    # Check if it is a substitution cipher
+    elif (cipher_type == cipher_identifier.SUBSTITUTION):
+        # Try Caesar
+        print("\nTrying Caesar...")
+        # Setup the solver
+        caesar_solver = CaesarSolver()
+        # Try and solve it
+        decrypt = caesar_solver.solve(message)
+        # Print out a sample
+        print(f"Decrypt sample: {decrypt[:30]}...")
+
+        if (input("\nDoes this look right? ") == "no"):
+            # Try Affine
+            print("\nTrying Affine...")
+            # Setup the solver
+            affine_solver = AffineSolver()
+            # Try and solve it
+            decrypt = affine_solver.solve(message)
+            # Print out a sample
+            print(f"Decrypt sample: {decrypt[:30]}...")
+
+            if (input("\nDoes this look right? ") == "no"):
+                # Try Simple Substitution
+                print("\nTrying simple substitution...")
+                # Setup the solver
+                simple_sub_solver = SimpleSubSolver()
+                # Try and solve it
+                decrypt = simple_sub_solver.solve(message)
+
+    # Check if it is a Vigenere cipher
+    elif (cipher_type == cipher_identifier.UNIFORM_DIST):
+        # Setup the solver
+        vigenere_solver = VigenereSolver()
+        # Try and solve it
+        decrypt = vigenere_solver.solve(message)
+
+    else:
+        decrypt = "error..."
+
+    output(decrypt)
+
+    
+def output(decrypt: str) -> None:
+    # Print the decrypt
+    print(f"\nHere is your decrypt: {decrypt}")
+
+
+def identify(message: str) -> tuple:
+    """
+    Gets the type of cipher and prints a message
+    """
+
+    # Identify the type of cipher
     cipher_identifier = CipherIdentifier()
-    
-    print(cipher_identifier.identify("GZQQX, H ZL ANQDC, ZMC H ZL QDZKKX MNS RTQD VGX H GZUD ADDM DWHKDC SN SGD ZQBGZDNKNFHRSR. CHC H CN RNLDSGHMF SN TORDS RNLDNMD? H ZL QDZKKX, QDZKKX GNOHMF SGZS NTQ NUDQKNQCR VHKK EHMC RNLDSGHMF Z AHS LNQD QDKDUZMS ENQ LD SN SZBJKD RNNM. SGD FQNTO GDQD HR FQDZS, ATS HS EDDKR KHJD SGDQD HR Z CHLHMHRGHMF QDSTQM NM AQDZJHMF VVHH BHOGDQR RDUDMSX-RHW XDZQR NM, ZMC DUDM SGD BNKC VZQ EHZKJZ HMSDQBDOS OHKD CNDRM'S RDDL SN AD FHUHMF LTBG AZBJ. HE XNT CNM'S GZUD ZMXSGHMF ENQ LD SN VNQJ NM, SGDM LZXAD XNT BNTKC RDMC NUDQ RNLD MDVAHDR ENQ LD SN SQZHM TO? VD QDBDHUDC Z RSZBJ NE LZSDQHZK EQNL KNMCNM Z BNTOKD NE VDDJR ZFN SGZS LHFGS LZJD Z FNNC DWDQBHRD ENQ SGDL, ZMC VGHKD SGD EHQRS EDV SDWSR ZQD QDKZSHUDKX RHLOKD, HS VNTKC AD Z FNNC DWDQBHRD ENQ XNTMF ZMZKXRSR SN SQX SN VNQJ NTS VGZS SGDX ZQD SDKKHMF TR. H GZUD ZSSZBGDC SGD EHQRS HSDL EQNL SGD AZSBG RN XNT BZM RDD VGZS H LDZM. H VNTKC UDQX CDZQKX KHJD SN JMNV VGZS \"SGD FQDZS LZSSDQ\" QDEDQR SN, ZMC H RTRODBS XNT VHKK VZMS SN JMNV SNN. SGD QDBQTHSR CNM'S MDDC SN JMNV LTBG SN AQDZJ SGHR NMD; HE SGDX GZUD CNMD NTQ HMCTBSHNM SQZHMHMF NM AZRHB BHOGDQR, SGDX RGNTKC AD EHMD. LX BNKKDZFTDR GDQD GZUD MHBJMZLDC SGHR EHKD SGD KHFGSGNTRD BNMROHQZBX, ADBZTRD NE VGDQD SGD OZODQR VDQD ENTMC. SGZS LZJDR HS RNTMC Z KNS LNQD HLOQDRRHUD SGZM HS EHQRS KNNJR, ATS XNT MDUDQ JMNV VGDQD RNLDSGHMF KHJD SGHR LHFGS KDZC. H GZUD RDS TO Z RDBTQD NMKHMD RXRSDL RN SGD SQZHMDDR BZM FDS ZBBDRR SN BZRD EHKDR ZMC RDMC LD SGDHQ ZSSDLOSR ZS CDBHOGDQHMF. HE XNT ONHMS SGDL SGDQD, SGDM H VHKK BGDBJ GNV SGDX ZQD FDSSHMF NM. LZXAD SGDX BNTKC KNNJ ZS SGD ANRR BNCDAQDZJHMF FTHCD ZR VDKK HE SGDX MDDC SN AQTRG TO SGDHQ RJHKKR. ZKK SGD ADRS, INCHD"))
-    print(cipher_identifier.identify("PB GHDU P, WKDQN BRX IRU OHWWLQJ PH NQRZ DERXW W'V RIIHU WR MRLQ ZLWK XV LQ WKH JUHDW PDWWHU. ZKLOH L VWLOO KDYH PDQB LGHDV IRU KRZ WR SURVHFXWH RXU SODQ, PB GDBV DUH JURZLQJ VKRUW, DV DUH BRXUV, DQG ZH ZLOO QHHG WR ILQG RWKHUV RI D VLPLODU PLQG ZKR KDYH WKH ZLW DQG LPDJLQDWLRQ WR FDUUB LW IRUZDUG. RXU DELOLWB WR LQIOXHQFH PDWWHUV GLUHFWOB ZLOO FRQWLQXH WR GHSHQG RQ WKH SRZHU RI WKH GHYLFHV ZH FDQ IDVKLRQ, DQG LW ZLOO EH FOHDU WR BRX WKDW WKLV ZLOO UHTXLUH QHZ ZDBV RI WKLQNLQJ DERXW WKH ZRUOG DV ZHOO DV QHZ WHFKQRORJLHV WR PDQLSXODWH LW. W, WRJHWKHU ZLWK O DQG WKH BRXQJ H ZLOO, L KRSH, EULQJ D QHZ SHUVSHFWLYH, DQG KHOS WR NHHS RXU OLWWOH FRQVSLUDFB DOLYH IRU DQRWKHU JHQHUDWLRQ. RXU DGYHQWXUHV VR IDU KDYH, RI QHFHVVLWB, EHHQ OLPLWHG LQ VFRSH, WKRXJK RXU DFTXLVLWLRQ RI EDEEDJH'V SODQV DQG WKH VXSSUHVVLRQ RI KLV DQDOBWLF HQJLQH PXVW FRXQW DV D KLJKOLJKW. LI ZH DUH WR VXFFHHG RQ WKH JUDQG VFDOH WKDW ZH ERWK WKLQN LV QHFHVVDUB, WKHQ LW LV WLPH IRU XV WR IRUPDOLVH RXU DUUDQJHPHQWV DQG WR HVWDEOLVK D KHDGTXDUWHUV IRU RXU RSHUDWLRQV. L KDYH JLYHQ WKLV VRPH WKRXJKW DQG KDYH DQ LGHD WKDW L KRSH ZLOO SOHDVH BRX. ZH VKRXOG EXLOG D OLJKWKRXVH LQ ORQGRQ! L FDQ LPPHGLDWHOB VHH BRXU REMHFWLRQ. ORQGRQ KDV QR URFNB VKRUHV, DQG VR QR QHHG RI RQH, EXW BRXU HASHULPHQWV ZLWK ODQWHUQV JLYH XV WKH LGHDO HAFXVH WR EXLOG RQH DV D SODFH WR WHVW WKHP. WKH RSSRUWXQLWLHV WKLV ZLOO DIIRUG DUH PDQB: WKH GHOLYHUB RI ODUJH FUDWHV RI HTXLSPHQW ZLOO JR XQQRWLFHG, FRQVLGHUHG DV SDUW RI WKH QDWXUDO EXVLQHVV RI WKH SODFH; LWV ORFDWLRQ RQ D EXVB ZKDUI ZRXOG GLVJXLVH WKH QHFHVVDUB FRPLQJV DQG JRLQJV RI RXU FR-FRQVSLUDWRUV; WKH ZDWHUZDB ZLOO SURYLGH XV ZLWK UHDGB WUDQVSRUWDWLRQ ERWK LQODQG YLD WKH FDQDOV DQG WR WKH GRFNV DW WLOEXUB IRU RXU LQWHUQDWLRQDO YHQWXUHV. QRW OHDVW, WKH HAWUDRUGLQDUB SRZHU QHHGHG IRU RXU GHYLFHV ZLOO EH PLVWDNHQ IRU WKH HQHUJB UHTXLUHG WR UXQ BRXU SXEOLF HASHULPHQWV. L KDYH OLWWOH HASHUWLVH LQ WKH GHVLJQ RU HQJLQHHULQJ RI VXFK VWUXFWXUHV, EXW L LPDJLQH WKDW WKHB UHTXLUH VXEVWDQWLDO IRRWLQJV. WKH GHYHORSPHQW RI WKHVH ZLOO SURYLGH WKH FRYHU ZH QHHG WR FRQVWUXFW RXU VHFUHW KHDGTXDUWHUV XQGHU WKH PRUH SXEOLF IDFH RI WKH OLJKWKRXVH LWVHOI DQG LWV DQFLOODUB EXLOGLQJV. LW PDB EH WKDW L KDYH PLVVHG VRPHWKLQJ LPSRUWDQW LQ PB FRQVLGHUDWLRQV, LQ ZKLFK FDVH SOHDVH GR SRLQW WKDW RXW, EXW LI ZH DUH WR SDVV RQ RXU GLVFRYHULHV, DPELWLRQV DQG SODQV WR WKH QHAW JHQHUDWLRQ ZH ZLOO QHHG WR JLYH WKHP D PRUH SHUPDQHQW KRPH, VR L KRSH ZH FDQ DJUHH WRJHWKHU RQ WKH EHVW ZDB WR SURFHHG. BRXUV, FK"))
-    print(cipher_identifier.identify("HRAODDMAYTRHHEEXEOECEOSDISEITPTMNAELELONHOORRWLNOTNBMELAFMOCEOHRPRSEBIESKHEAMIIRUORKGIIESEYXAONVTCDRAATCTLONETEVGCAIOOHEYIFMORNEAEUUSDEONBSRTRNWEIDTKMEARLDAUEWKGHMHAAOXCERENHEERFTTRETESPIODAOXCERUALTOYWKTAHATLGIVTCDERIMOHAHYCSWTEIUVYAYKOOHTGAAEERODUEYWLNOOOHEUSNETNMHBAHOIHHENUNCORNGBIIETYODFECLGSRANKMTSLHITUCSRYCSFETPEWEUTTKIODOOIRSEATRLKUOEROHEMHGKHMHEIVEPERNNYEOEAECGAETAFENEMHRTPAEPRGYPNHTRHILHKWEREIOAEEODOTESOBANUEWLTYEOUUHRISLESOERIBENAELOUWIVEELTHRALISDOMHGUEOOIRLRLHITTREOSLISEIATREVTRTALOTGUEIRTTFLITRSINHGTNBANWCHSVTIESAENELAIKNRPIDSSMBINUBKYDTVNHGRTOOHMBOODNVSEWEOETIPREESCFTIFMNNOLFEATTGMEOERSOHAWLHITWXARAVYMEWLEOERSOOGASTRORUHTYELNSAAAEHITERTBCOUNEAMNODRELITNWTEEMTRETNSPTULATNTTRRTONDKWCOETSETYVOOIUITINNSCHSEHLENYLAEEHECADIITLHOENICEUOHEEPSRODAASSNLMEPSVHIITOBYNENWROTNITSGLDASUSUOISTSHRNSNTCSCELASDTITMSDIENFUITMETNICCOHAGTGMBHCLOAHOCEEIGDSLFEETRHTIKLLHEJIAYMRAIRLNSEYABNIDTAHOGTIDOTNOSSEEMAYAYPGAUVLDIFDMHGIORENOETKSNEOHEGAUTELEEIDISNERNEIWIPRENSYRNDEHOWFLIEEPEETEOGIMHCFUNAATNOEWKTNYYCLEORMEIFMOAUECVAAOARLOOOCPOESOAITKGDEIFTMDITFSEESELILILTUBGDEIFYNNYSTTOOWTEREIUHETHTFSTFMETSOAEHIAWLEDRLEKWAHRTTRFSAISCOIWTKWOECIDTEOOUTRKINFEADERDTNAIOACPRHSUBIMOEUHEVINEHFEEGHSOPABAEWRHAREFNHMETUATRMEITNFSOSTUVKWESEILEIITAHETACELESMTTIEAECSOSISDNEEAETTCHIIOOTEHEEWLEHTYETNNYTYULKTBSDRKGIAEIHNDBSPESLATBTD"))
-    
+    cipher_type = cipher_identifier.identify(message)
+
+    # Output a message
+    if ("un" not in cipher_type):
+        print(f"\nI identified your cipher to be a {cipher_type} cipher. I will now try to decrypt it...")
+    elif (type == "uniform"):
+        print(f"\nI found that your cipher had uniform distribution. I will try and solve it using the Vigenere solver...")
+    else:
+        print("\nI was unable to determine the type of cipher used...")
+
+    # Output the identifier and type of cipher
+    return cipher_identifier, cipher_type
+
+
+def main():
+    # Run the tests
+    tests()
+
+    # Run the main program
+    go()
 
 def tests():
+    """
+    Runs all of the tests
+    """
 
     ### Run the tests ###
     print("Running Tests...")
 
     # Test the chi-squared statistic function
     mStatMeasurer = StatMeasurer()
-    print("\nTesting the Chi-squared statistic function...")
-    if (mStatMeasurer.chi_squared("Defend the east wall of the castle") == 18.528310082299488):
-        print("Passed")
-    else:
-        print("Failed")
+    chi_test = Test("\nTesting the Chi-squared statistic function...")
+    chi_test.setTest(lambda: mStatMeasurer.chi_squared("Programming in python is fun"), 27.907733765597285)
+    chi_test.print_output()
+
+    # Test the index of coincidence calculator
+    ic_test = Test("\nTesting the Index of Coincidence statistic calculator...")
+    ic_test.setTest(lambda: mStatMeasurer.get_ic("Programming in python is fun"), 0.082010582010582)
+    ic_test.print_output()
 
     # Test the ngram fitness score function
     mNgramScorer = NgramScorer(NgramFiles.QUADGRAM_FILE)
     print("\nTesting the ngram fitness score function...")
     if (mNgramScorer.ngram_score("HELLOWORLD") == -28.42865649982033):
-        print("Passed")
-    else:
-        print("Failed")
+    
+    ic_test = Test("\nTesting the Index of Coincidence statistic calculator...")
+    ic_test.setTest(lambda: mStatMeasurer.get_ic("Programming in python is fun"), 0.082010582010582)
+    ic_test.print_output()
 
     # Test the caesar solver with known shift
     mCaesarSolver = CaesarSolver()
