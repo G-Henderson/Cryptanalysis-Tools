@@ -83,6 +83,8 @@ class CipherIdentifier:
         # Get the IC of the message
         message_ic = self.stat_measurer.get_ic(message)
 
+        print(f"Message IC: {str(message_ic)}")
+
         # If the IC is between 0.025 and 0.045, the characters are uniformly distributed
         if (0.025 < message_ic) and (message_ic < 0.045):
             return True

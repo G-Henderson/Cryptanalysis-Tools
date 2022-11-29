@@ -10,19 +10,16 @@ class TranspositionSolver(CipherSolver):
         super().__init__()
 
     def with_key(self, message: str, key: str) -> str:
-        # Setup grid
-        grid = self.create_grid(message, key)
-
-        # Put key into list
-        key_as_list = list(key.upper())
-
-        # Put key into alphabetical order
-        sorted_list = sorted(key_as_list)
-
         output = ""
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                output += grid[i][sorted_list.index(key_as_list[j])]
+
+        for i in range(0, len(message), len(key)):
+            sub_string = message[i:i+len(key)]
+            for j in range(len(key)):
+                current_index = int(key[j])
+                try:
+                    output += sub_string[current_index]
+                except:
+                    pass
 
         # Return the rearranged message
         return output
@@ -86,26 +83,6 @@ class TranspositionSolver(CipherSolver):
 
         # Return the best message
         return best_message
-
-    def create_grid(self, message: str, key: str) -> list:
-        # Put key into list
-        key_as_list = list(key.upper())
-
-        # Put key into alphabetical order
-        sorted_list = sorted(key_as_list)
-
-        # Get the number of columns and rows
-        num_cols = len(key)
-        num_rows = len(message) // num_cols
-
-        # Create grid
-        grid = [[""for y in range(num_cols)]for x in range(num_rows)]
-
-        for i in range(len(message)):
-            pass
-        
-        # Return the grid variable
-        return grid
 
     def get_permutations(self, list_digits: list) -> list:
         """
