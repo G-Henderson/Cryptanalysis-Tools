@@ -15,11 +15,19 @@ class TranspositionSolver(CipherSolver):
         for i in range(0, len(message), len(key)):
             sub_string = message[i:i+len(key)]
             for j in range(len(key)):
-                current_index = int(key[j])
                 try:
-                    output += sub_string[current_index]
+                    current_index = int(key[j])
+                    try:
+                        output += sub_string[current_index]
+                    except:
+                        pass
                 except:
-                    pass
+                    ALPHABET = sorted(list(key))
+                    current_index = ALPHABET.index(key[j])
+                    try:
+                        output += sub_string[current_index]
+                    except:
+                        pass
 
         # Return the rearranged message
         return output
