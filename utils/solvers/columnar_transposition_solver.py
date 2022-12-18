@@ -28,8 +28,11 @@ class ColumnarTranspositionSolver(CipherSolver):
         return output
 
     def with_keylen(self, message: str, keylen: int) -> str:
+        # Define alphabet
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
         # Get the number of digits needed for the key
-        my_digits = [str(i) for i in range(keylen)]
+        my_digits = [alphabet[i] for i in range(keylen)]
 
         # Get the permutations of those digits
         my_permutations = self.get_permutations(my_digits)
@@ -69,7 +72,7 @@ class ColumnarTranspositionSolver(CipherSolver):
         print("")
 
         # Iterate through key lengths between 2 and 9
-        for keylen in range(2,10):
+        for keylen in range(2,27):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt
