@@ -1,17 +1,19 @@
 from utils.cipher_solver import CipherSolver
 
-class CaesarSolver(CipherSolver):
+class CadenusSolver(CipherSolver):
 
     """
-    Class for decrypting ciphertexts encrypted using the Playfair cipher
+    Class for decrypting ciphertexts encrypted using the Cadenus cipher
     """
 
     def __init__(self) -> None:
         super().__init__()
-        
-    def with_key(self, message: str, key_table: list) -> str:
+
+    def with_key(self, message: str, shift: int) -> str:
         output = ""
-        
+        for i in range(len(message)):
+            char = message[i]
+            output += chr((ord(char) + shift-65) % 26 + 65)
 
         return output
 
@@ -32,3 +34,6 @@ class CaesarSolver(CipherSolver):
                 best_msg = curr_msg
 
         return best_msg
+
+    def find_keylen(self, message: str) -> int:
+        return len(message) / 25
