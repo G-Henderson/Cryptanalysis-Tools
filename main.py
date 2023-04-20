@@ -10,8 +10,6 @@ from utils.solvers.vigenere_solver import VigenereSolver
 from utils.solvers.railfence_solver import RailfenceSolver
 from utils.solvers.transposition_solver import TranspositionSolver
 
-from utils.stat_measurer import StatMeasurer
-from utils.ngrams_scorer import NgramScorer, NgramFiles
 from utils.test import Test
 
 
