@@ -17,10 +17,12 @@ class NgramScorer():
         fitness test.
         """
 
-        # Create empty dict to contain the ngrams and number of times it appears
+        # Create empty dictionary to contain the ngrams and number of times it appears
         self.ngrams = {}
         # Read the file contents
-        my_file_contents = open(filename, "r").readlines()
+        with open(filename, "r") as my_file:
+            my_file_contents = my_file.readlines()
+            
         # Iterate through the file contents
         for line in my_file_contents:
             # Get the key and count

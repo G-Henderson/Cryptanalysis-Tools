@@ -12,9 +12,9 @@ class AffineSolver(CipherSolver):
         # Define alphabet
         self.ALPHABET = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    def with_key(self, message: str, key: list) -> str:
+    def with_key(self, message: str, key: tuple) -> str:
         # Get separate keys
-        if (type(key) == list):
+        if (type(key) == tuple):
             if (len(key) >= 2):
                 # Get key a and b from the list
                 a = int(key[0])
@@ -34,7 +34,7 @@ class AffineSolver(CipherSolver):
 
         else:
             # Throw an error
-            raise Exception("Affine solver: a list of 2 keys is required!")
+            raise Exception("Affine solver: a tuple of 2 keys is required!")
 
     def brute_force(self, message: str) -> str:
         best_score = -99e9
@@ -53,4 +53,5 @@ class AffineSolver(CipherSolver):
                     best_score = curr_score
                     best_msg = curr_msg
 
+        # Return the highest scoring message text
         return best_msg
