@@ -31,11 +31,11 @@ class ColumnarTranspositionSolver(CipherSolver):
         # Define alphabet
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-        # Get the number of digits needed for the key
-        my_digits = [alphabet[i] for i in range(keylen)]
+        # Get the number of characters needed for the key
+        my_chars = [alphabet[i] for i in range(keylen)]
 
         # Get the permutations of those digits
-        my_permutations = self.get_permutations(my_digits)
+        my_permutations = self.get_permutations(my_chars)
 
         # Create variables to store the highest score and best permutation
         best_score = -99e9
@@ -72,7 +72,7 @@ class ColumnarTranspositionSolver(CipherSolver):
         print("")
 
         # Iterate through key lengths between 2 and 9
-        for keylen in range(11,27):
+        for keylen in range(2,10):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt

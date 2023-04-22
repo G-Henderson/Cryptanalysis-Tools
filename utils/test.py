@@ -1,12 +1,9 @@
-
 class Test(object):
 
     def __init__(self, details) -> None:
-        # Print the details
-        print(details)
-
-        # Create empty variables
-        self.ex_output_data = None
+        # Setup variables
+        self.test_details = details
+        self.expected_output_data = None
         self.my_test = None
     
 
@@ -16,7 +13,7 @@ class Test(object):
         """
 
         self.my_test = my_test
-        self.ex_output_data = expected_output
+        self.expected_output_data = expected_output
 
     def test(self) -> bool:
         """
@@ -27,7 +24,7 @@ class Test(object):
         actual_output = self.my_test()
 
         # Check if the actual result is the same as expected
-        if (actual_output == self.ex_output_data):
+        if (actual_output == self.expected_output_data):
             # If it is return true
             return True
         
@@ -39,6 +36,9 @@ class Test(object):
         """
         Runs the test and outputs the result
         """
+
+        # Print test details
+        print(self.test_details)
 
         # Get the result by running the test
         result = self.test()

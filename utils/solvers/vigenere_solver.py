@@ -48,8 +48,8 @@ class VigenereSolver(CipherSolver):
         key = key.upper()
 
         # Iterate through each character of the ciphertext
-        for i in range(len(message)):
-            decrypt += chr((((ord(message[i]) - 65) - (ord(key[i % len(key)]) - 65) + 26) % 26) + 65)
+        for count, char in enumerate(message):
+            decrypt += chr((((ord(char) - 65) - (ord(key[count % len(key)]) - 65) + 26) % 26) + 65)
 
         # Return the decrypted text
         return decrypt
@@ -121,7 +121,7 @@ class VigenereSolver(CipherSolver):
         best_keylen = 0
         best_score = -99e9
 
-        # Try key lengths of 3 up to 25
+        # Try key lengths of 3 up to 20
         for keylen in range(3, 20):
             # Decrypt using the current key length
             decrypt = self.with_keylen(message, keylen)

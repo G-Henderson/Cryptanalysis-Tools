@@ -41,7 +41,7 @@ class RailfenceSolver(CipherSolver):
     def brute_force(self, message: str) -> str:
         best_score = -99e9
         best_msg = ""
-        for key in range(1,26):
+        for key in range(1,33):
             # Get the shifted message
             curr_msg = self.with_key(message, key)
 

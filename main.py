@@ -11,11 +11,15 @@ from utils.solvers.railfence_solver import RailfenceSolver
 from utils.solvers.transposition_solver import TranspositionSolver
 
 from utils.test import Test
+from utils.frequency_graph import FrequencyGraph
 
 
 def get_message() -> str:
     # Prompt the user to input their message to decrypt and get their input
     message = input("Please enter your ciphertext: ")
+
+    new_graph = FrequencyGraph(message)
+
     # Return the string entered by the user
     return message
 
