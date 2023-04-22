@@ -16,13 +16,16 @@ from utils.test import Test
 
 
 def get_message() -> str:
+    # Prompt the user to input their message to decrypt and get their input
     message = input("Please enter your ciphertext: ")
-
+    # Return the string entered by the user
     return message
 
 
-def go(message: str=None) -> str:
+def start(message: str=None) -> str:
+    # Check if a message was passed in as argument
     if (message == None):
+        # Get the message to decrypt
         message = get_message()
 
     # Get the type of cipher
@@ -106,7 +109,7 @@ def output(decrypt: str) -> None:
 
 def identify(message: str) -> tuple:
     """
-    Gets the type of cipher and prints a message
+    Prints a message and returns the cipher identifier object and cipher type
     """
 
     # Identify the type of cipher
@@ -130,7 +133,7 @@ def main():
     #tests()
 
     # Run the main program
-    go()
+    start()
 
 if __name__ == "__main__":
     main()

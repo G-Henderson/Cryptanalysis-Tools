@@ -11,6 +11,7 @@ class CipherIdentifier:
         self.TU = TextUtils()
 
         # Setup cipher variables
+        self.MORSE = "morse"
         self.SUBSTITUTION = "substitution"
         self.TRANSPOSITION = "transposition"
         self.UNIFORM_DIST = "uniform"
@@ -26,7 +27,9 @@ class CipherIdentifier:
         self.message = message
 
     def identify(self, message: str=None) -> str:
-        # Look at number of characters
+        # Check if it is morse code
+        if (self.is_morse(message)):
+            return self.MORSE
         
         # Work out if it is transposition
         if (self.is_transposition(message)):
@@ -42,8 +45,31 @@ class CipherIdentifier:
 
         # It is likely to be something else
         return self.UNKNOWN
+    
+    def is_morse(self, message: str) -> bool:
+        """
+        Checks whether or not the message argument has been encoded using morse code.
+        """
+
+        # Assume non-morse
+        is_morse = False
+
+        # Check for morse characters
+        if ("." in message) and ("-" in message):
+            is_morse = True
+
+        # Check if non-morse character in message
+        for char in message:
+            if (char in self.TU.ALPHABET):
+                is_morse = False
+
+        return is_morse
 
     def is_transposition(self, message: str) -> bool:
+        """
+        Checks whether or not the message argument is encrypted using a transposition cipher.
+        """
+
         # Get rid of any characters that aren't letters
         message = self.TU.only_letters(message)
         # Make all letters uppercase
@@ -69,6 +95,10 @@ class CipherIdentifier:
             return False
 
     def is_substitution(self, message: str) -> bool:
+        """
+        Checks whether or not the message argument is encrypted using a substitution cipher.
+        """
+
         # Get the IC of the message
         message_ic = self.stat_measurer.get_ic(message)
 
@@ -80,6 +110,10 @@ class CipherIdentifier:
             return False
 
     def is_uniform_dist(self, message: str) -> bool:
+        """
+        Checks whether or not the message argument has a uniform distribution.
+        """
+
         # Get the IC of the message
         message_ic = self.stat_measurer.get_ic(message)
 

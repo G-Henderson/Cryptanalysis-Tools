@@ -72,7 +72,7 @@ class ColumnarTranspositionSolver(CipherSolver):
         print("")
 
         # Iterate through key lengths between 2 and 9
-        for keylen in range(2,27):
+        for keylen in range(11,27):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt
