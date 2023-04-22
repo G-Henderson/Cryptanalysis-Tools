@@ -9,14 +9,11 @@ class AffineSolver(CipherSolver):
     def __init__(self) -> None:
         super().__init__()
 
-        # Define alphabet
-        self.ALPHABET = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
     def with_key(self, message: str, key: tuple) -> str:
         # Get separate keys
         if (type(key) == tuple):
             if (len(key) >= 2):
-                # Get key a and b from the list
+                # Get key a and b from the tuple
                 a = int(key[0])
                 b = int(key[1])
 
@@ -42,7 +39,7 @@ class AffineSolver(CipherSolver):
         for b in range(25):
             for a in [1,3,5,7,9,11,15,17,19,21,23,25]:
                 # Get the decrypted message
-                curr_msg = self.with_key(message, [a, b])
+                curr_msg = self.with_key(message, (a, b))
 
                 # Get a score for that message
                 curr_score = self.quadgram_scorer.ngram_score(curr_msg)

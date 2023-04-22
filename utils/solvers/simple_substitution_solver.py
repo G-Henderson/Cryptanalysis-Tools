@@ -10,9 +10,6 @@ class SimpleSubSolver(CipherSolver):
     def __init__(self) -> None:
         super().__init__()
 
-        # Setup alphabet list
-        self.ALPHABET = list(("abcdefghijklmnopqrstuvwxyz").upper())
-
     def with_key(self, message: str, key: str) -> str:
         """
         Function for dcecryting ciphertext from known key
@@ -94,6 +91,3 @@ class SimpleSubSolver(CipherSolver):
 
         # Return the decrypt using the best key
         return self.with_key(message, "".join(best_key))
-
-
-

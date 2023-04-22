@@ -91,32 +91,3 @@ class TranspositionSolver(CipherSolver):
 
         # Return the best message
         return best_message
-
-    def get_permutations(self, list_digits: list) -> list:
-        """
-        Function to find all permutations of a string (that has been converted to a list)
-        """
-
-        # Check that there are digits to find permutations of
-        if (len(list_digits) == 0):
-            return []
-
-        # Check whether only 1 permutation is possible
-        elif (len(list_digits) == 1):
-            return [list_digits]
-
-        # Else find the permutations of the digits given
-        else:
-            # Create an empty list to store the permutations
-            my_permutations = []
-
-            # Iterate through the list
-            for digit in list_digits:
-                other_digits = list_digits[:list_digits.index(digit)] + list_digits[list_digits.index(digit)+1:]
-
-                # Get all the permutations where the current digit is 1st
-                for permutation in self.get_permutations(other_digits):
-                    my_permutations.append([digit] + permutation)
-
-            # Return the list of permutations
-            return my_permutations

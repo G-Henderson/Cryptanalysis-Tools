@@ -60,7 +60,7 @@ class CipherIdentifier:
 
         # Check if non-morse character in message
         for char in message:
-            if (char in self.TU.ALPHABET):
+            if (char.lower() in self.TU.ALPHABET):
                 is_morse = False
 
         return is_morse

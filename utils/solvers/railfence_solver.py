@@ -13,7 +13,7 @@ class RailfenceSolver(CipherSolver):
         if (key == 1):
             return message
         else:
-            pt = [""for i in range(len(message))]
+            pt = ["" for i in range(len(message))]
             k=0
             for line in range(key-1):
                 skip=2*(key-line-1)
