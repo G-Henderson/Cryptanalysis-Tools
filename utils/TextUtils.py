@@ -15,18 +15,13 @@ class TextUtils:
         """
 
         # Create temporary variable to hold text
-        temp = ""
+        result = ""
 
         # Iterate through message
-        for i in range(len(message)):
-            # Get the current character
-            current_char = message[i]
+        for char in message:
             # Check if current char is in alphabet or is a space.
-            if (current_char.lower() in self.ALPHABET) or (current_char == " "):
-                temp += current_char
-
-        # Transfer the result stored in the temp variable into the message variable
-        result = temp
+            if (char.lower() in self.ALPHABET) or (char == " "):
+                result += char
 
         # Return the message
         return result
@@ -37,11 +32,9 @@ class TextUtils:
         Removes all the spaces from the message (leaves punctuation)
         """
 
-        # Remove the spaces from the text
-        result = message.replace(" ", "")
-
-        # Return the text
-        return result
+        # Remove the spaces from the text and return the result
+        return message.replace(" ", "")
+    
 
     def only_letters(self, message: str) -> str:
         """

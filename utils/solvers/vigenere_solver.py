@@ -143,31 +143,38 @@ class VigenereSolver(CipherSolver):
         # Return the decrypt
         return decrypt
 
-    def get_permutations(self, data, r: int=None):
+    def get_permutations(self, characters, permutation_length: int=None) -> list:
+        """
+        Gets the permutations 
+        """
+
+        # Create list to store permutations in
         my_permutations = []
         
-        n = len(data)
-        if (r == None):
-            r = len(data)
+        # Check the permutation length
+        num_chars = len(characters)
+        if (permutation_length == None):
+            permutation_length = num_chars
 
-        indices = [i for i in range(n)]
-        cycles = [i for i in range(n, n-r, -1)]
         
-        my_permutations.append([data[i] for i in indices[:r]])
+        indices = [i for i in range(num_chars)]
+        cycles = [i for i in range(num_chars, num_chars-permutation_length, -1)]
         
-        while n:
-            for i in range(r-1, -1, -1):
+        my_permutations.append([characters[i] for i in indices[:permutation_length]])
+        
+        while num_chars:
+            for i in range(permutation_length-1, -1, -1):
                 cycles[i] -= 1
                 
                 if cycles[i] == 0:
                     indices[i:] = indices[i+1:] + indices[i:i+1]
-                    cycles[i] = n - i
+                    cycles[i] = num_chars - i
                     
                 else:
                     j = cycles[i]
                     indices[i], indices[-j] = indices[-j], indices[i]
                     
-                    my_permutations.append([data[i] for i in indices[:r]])
+                    my_permutations.append([characters[i] for i in indices[:permutation_length]])
                     
                     break
             

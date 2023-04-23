@@ -12,10 +12,7 @@ class FrequencyGraph:
 
         self.message = self.text_utils.only_letters(message).upper()
 
-        self.show_graph()
-
-
-    def show_graph(self) -> None:
+    def show(self) -> None:
         letter_frequencies = [0 for i in range(26)]
 
         for char in self.message:

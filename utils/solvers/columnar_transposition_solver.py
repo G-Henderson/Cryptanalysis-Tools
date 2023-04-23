@@ -68,8 +68,8 @@ class ColumnarTranspositionSolver(CipherSolver):
         # Insert a new line
         print("")
 
-        # Iterate through key lengths between 2 and 9
-        for keylen in range(2,10):
+        # Iterate through key lengths between 2 and 8
+        for keylen in range(2,9):
             # Get the best message using that keylen
             decrypt = self.with_keylen(message, keylen)
             # Get the score for the new decrypt

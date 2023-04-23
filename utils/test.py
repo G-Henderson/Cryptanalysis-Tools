@@ -29,10 +29,11 @@ class Test(object):
             return True
         
         else:
+            print(f"Actual output: {actual_output}")
             # Else return false
             return False
 
-    def print_output(self) -> None:
+    def run(self) -> None:
         """
         Runs the test and outputs the result
         """
