@@ -122,7 +122,7 @@ class VigenereSolver(CipherSolver):
         best_score = -99e9
 
         # Try key lengths of 3 up to 20
-        for keylen in range(3, 20):
+        for keylen in range(3, 21):
             # Decrypt using the current key length
             decrypt = self.with_keylen(message, keylen)
             # Score the current decrypt
