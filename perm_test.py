@@ -1,6 +1,6 @@
 def get_permutations(characters, permutation_length: int=None) -> list:
         """
-        Gets the permutations 
+        Gets permutations of specified length from chars specified
         """
 
         # Create list to store permutations in
@@ -37,4 +37,4 @@ def get_permutations(characters, permutation_length: int=None) -> list:
             else:
                 return my_permutations
             
-print(get_permutations(list("ABCD"), 2))
+print(get_permutations(list("ABC"), 2))

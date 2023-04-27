@@ -9,3 +9,9 @@ help, h, ?          Displays help about this program
 load, l             Allows the user to load a message from the storage file
 new, n              Allows the user to enter a new ciphertext
 test, t             Runs the automated tests for the program
+
+These options will become available once you've enter a ciphertext:
+-------------------
+
+auto, a             Attempts to automatically decrypt the ciphertext
+manual, m           Allows user to choose which cipher solver to use
