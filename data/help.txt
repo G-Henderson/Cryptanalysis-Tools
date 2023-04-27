@@ -14,4 +14,6 @@ These options will become available once you've enter a ciphertext:
 -------------------
 
 auto, a             Attempts to automatically decrypt the ciphertext
-manual, m           Allows user to choose which cipher solver to use
+man, manual, m      Allows user to choose which cipher solver to use
+graph, g            Displays a graph comparing the letter frequencies of the message against English frequencies
+save, s             Saves the ciphertext and plaintext (if any) to the storage file

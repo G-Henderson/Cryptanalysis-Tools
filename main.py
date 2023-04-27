@@ -86,7 +86,7 @@ def create_menu():
 
         else:
             # Command wasn't found
-            print("Please enter a valid command!! Type 'h' for help...")
+            print("\nPlease enter a valid command!! Type 'h' for help...")
         
         # Run the command
         if (my_option != None):
@@ -148,6 +148,7 @@ def enter_message(menu: Menu) -> list:
     menu.add_menu_option(MenuOption('Auto Decrypt', ['auto', 'a'], "auto_solve"))
     menu.add_menu_option(MenuOption('Manual Decrypt', ['man', 'manual', 'm'], "manual_solve"))
     menu.add_menu_option(MenuOption('Frequency graph', ['graph', 'g'], "create_graph"))
+    menu.add_menu_option(MenuOption('Save', ['save', 's'], "save_to_file"))
 
     # Return menu and message
     return [menu, message]
@@ -167,6 +168,9 @@ def get_help() -> None:
     # Print the contents of the file, line by line
     for line in help_contents:
         print(line.replace("\n", ""))
+    
+    # Return
+    return
 
 def create_graph(message: str) -> None:
     """
@@ -176,38 +180,51 @@ def create_graph(message: str) -> None:
     new_graph = FrequencyGraph(message)
     new_graph.show()
 
+    # Return
+    return
+
 def manual_solve(message: str) -> str:
     """
     Function to manually decipher an enciphered message
     """
 
     # Create list of menu options
-    options = [MenuOption('Caesar', ['caesar', 'c'], "CaesarSolver"),
-                MenuOption('Affine', ['affine', 'a'], "AffineSolver"),
-                MenuOption('Simple substitution', ['simple sub', 's'], "SimpleSubSolver"),
-                MenuOption('Rail Fence', ['rail', 'r'], "RailfenceSolver"),
-                MenuOption('Transposition', ['trans', 't'], "TranspositionSolver"),
-                MenuOption('Columnar Transposition', ['col', 'ct'], "ColTransSolver"),
-                MenuOption('Vigenere', ['vigenere', 'v'], "VigenereSolver"),
-                MenuOption('Morse Code', ['morse', 'm'], "VigenereSolver")
+    options = [MenuOption('Caesar', ['caesar', 'c'], "CaesarSolver().solve"),
+                MenuOption('Affine', ['affine', 'a'], "AffineSolver().solve"),
+                MenuOption('Simple substitution', ['simple sub', 's'], "SimpleSubSolver().solve"),
+                MenuOption('Rail Fence', ['rail', 'r'], "RailfenceSolver().solve"),
+                MenuOption('Transposition', ['trans', 't'], "TranspositionSolver().solve"),
+                MenuOption('Columnar Transposition', ['col', 'ct'], "ColTransSolver().solve"),
+                MenuOption('Vigenere', ['vigenere', 'v'], "VigenereSolver().solve"),
+                MenuOption('Morse Code', ['morse', 'm'], "MorseTranslator().decode"),
+                MenuOption('Get Help', ['help', 'h', '?'], "get_help")
         ]
 
     # Create sub menu for manual decryption
     manual_menu = Menu("Manual Decryption", options)
     manual_menu.display()
 
-    # Get user input
-    command = get_user_input()
     my_option = None
-    # Search for their command
-    for option in main_menu.getMenu_options():
-        if (command in option.getKeys()):
-            my_option = option
-            break
+    while my_option == None:
+        # Get user input
+        command = get_user_input()
 
-    else:
-        # Command wasn't found
-        print("Please enter a valid command!! Type 'h' for help...")
+        # Search for their command
+        for option in manual_menu.getMenu_options():
+            if (command in option.getKeys()):
+                if (option.getOption_name() == "Get Help"):
+                    eval(f"{option.getOption_function()}()")
+                else:
+                    my_option = option
+                    break
+
+        else:
+            # Command wasn't found
+            print("\nPlease enter a valid command!! Type 'h' for help...")
+
+    # Return the decrypted message
+    return eval(f"{my_option.getOption_function()}(message)")
+    
 
 def auto_solve(message: str) -> str:
     """
@@ -316,6 +333,25 @@ def identify(message: str) -> tuple:
 def run_tests():
     # Run automated tests
     test_num = 1
+
+    # Test using previous challenges
+    my_file = open('data/tests.json')
+    data = json.load(my_file)
+
+    for challenge in data["test_ciphers"]:
+        print(challenge)
+        print(f"\n{test_num}. Trying {challenge['name']}")
+
+        decrypt_a = auto_solve(challenge["ctext_a"])
+        decrypt_b = auto_solve(challenge["ctext_b"])
+
+        print(f"\nPart A decrypt: {decrypt_a}")
+        print(f"Official Part A decrypt: {challenge['answer_a']}")
+
+        print(f"\nPart B decrypt: {decrypt_b}")
+        print(f"Official Part B decrypt: {challenge['answer_b']}")
+
+        test_num += 1
 
     text_utils = TextUtils()
     # 1. Test the space removal
@@ -549,7 +585,29 @@ def run_tests():
     test_num += 1
 
     # Test unknown cipher encoded with morse code
+    test = Test(f"\n{test_num}. Test an unknown cipher encoded with morse code...")
+    test.setTest(lambda: auto_solve("... .- . -..- .--- -..- ..-. .--. .-.. -. ... .- .--. --. .-. .... --. -.- -.-. .-- . .-.. ...- .-. ... .--. . --.. --.. -..- --. ..- . ...- -.-- -. -.- --. --. .-- .--. -.- .-.. -.. - -.- -.. - ..-. --.. -. .-. -.-- - -.- .-.. .-.. .-.. -. - --- -- -.. --.. .-.. -.-- ..- .... .. -... ... .. --.. - --.. ...- .-. ... . -. -.-- . ... ... . --- ... .. ..-. .--. -. .--. .--. .-. -..- --.. .-. .-. ... . ..- --- .-. .-.. ..- .-.. -.-- ...- .. .-- ... --.- .--. -.. ..- --- -..- .... -- .... -. .-- .- -.. -..- -.-- -.. .... .-. -.-. .-.. .-- .... --.. .. .- --- -.-- -.- .-. ... . ...- -.-- - -... .-. .--- ... ...- -.. .-.. .-. -... - -- --.. -.- --- -- -.-- . . -.-- . .... -- --.- ... . --.- --- ... . -... -.-- - .--- -.- .... .. .--. .--. .... .-. --. --- -- .-.. .-. ..-. -... -..- .... . --.- ... .. .- -- . ... .-.. .-.. -. --.- --- -- .. . .-.. -. --. ..- .-. .. .-. .-.. -... -. .--- --.- .. -.-. .-- .. .- -- .-.. ..-. -- ..-. - ...- --.. . .-.. -.-- . -.-. . . -.. -..- -.-- .-- .-.. ...- -.-- .--. .... --. -.-- - -... --. --- .. -.-. .- ..- .- -.- .-.. .-- --. -.-- . ..-. -.-- .-.. .-- ..-. .--. - .... -..- -.-- .. -... --.. ..-. ... ..- -.-- -..- -- . .... .-. -- .--. ... .--. .-. . --. ..- .... .-. -. - -.- .-. --. -.-- .... --. -.-. . -. .-. - .-- -.-. --- .-- ..- -.- -.-. .. ..-. .--. .-- -. -.-- ... .. -.-- --- .. .- -- .... .. ..-. .-.. ...- .-. --. .- ...- -- -- .-.. .-. ... - -. ... -.. - --.- ..- -.-- -..- .. -.-- --- .--- -.-. ... . .-. -.. --- . --.. --.. ...- ..-. --.. .-- --- --- .-. ..-. ... . .-- .-. - .--. .. -... . --- ... --- -.-- .... -- ..-. - -.. .- - --. .. .-- -.-- ...- .... .-.. --. .. .--. -.. -... .-.. --.- . .-.. --- -.-. .... --.. . .-.. -.-. . .-. -. .. .--. -- .-.. -. .- ..-. -.- - -..- .-. -.-. .. - -- .--. ...- -.-. --- .- .- --. ..-. -..- -- -..- .- --. --- -. . .--- .--. .-. --. -. .--. .-.. -.-- -.. .- .--. .. .--. .-- --.- . --- -. .-. --.. -..- -.- --.. .-. .-. --.. .--. --. ..-. -.-- --- -.-- ..- .-. -.-. .-. ... .- .- -.-. .--. .... -- .-.. -. --.- --- -. . .-.. . -... .-. -.-- ..-. ...- -.-. . .... -. --.. . .-.. -.-. .- .... -... - .--. -..- .--. .-.. -.-. .-. --- -.. -.-- .-.. --- . --. -.- -. -..- -.-- -- .-.. .-. --- .-.. --.- --.- ..-. .-. .-. --.. ... . .-. ... .. ..-. -.- -..- - .--- --.. -.-- .-. -..- -.. .- --. .-- .-.. .- ..- . ..-. -.-. ... .- -.-. ...- .--- -..- -- --.- .. .- .--- -..- .. -- -.-- .... ...- -.-- . . --. .-- .- .- .--- - --. -.-. -.-. - -. --- -.-- .--. .-- --- --- .- --.. .... . .-.. . - -... -.-- .- .. .-.. --- - ...- ... .--. -- .-.. .-.. -... -. -.-- .--. --.- -.-. -.-- - --. -..- .--- -- .-.. .-. - -... -.- .. - .--- .-.. .. .- ... .--- .-- -.-. .-- ..-. --. ..- . .-.. -.-. -..- .. .--. --. .-- .--. -.-. --- --- ... .-.. . .-.. -.-. .-- .- --.. ...- .-- -- . ... - .-. -..- -.. ..-. -.-. --.- --- . -.- . .-.. -.-. .--- -.-. -... .- .-- .... .--. .--. .- -.-- --- -.. .. ..- ... --- ..- -.- .... . --.- .... --- . --.- - .-. . --.- --- . --- . .- -.-- -.. --- .- -.- . .-.. --. -.-- --. -. -.-- ...- -- .-.. .-. - ..- -.- -..- .--- -- -.-. .- ... --. --. ... ... -.-. .-- ..- -.- -.-- -- .-. ... --- .... -- ... -..- .-. ... .. ..-. -.-. .-.. .-- -.-- -.-. --- .... --.. - .-. -.-. -. --- --.. ... .--. ...- .- - .- -.-- .. --.. .-. .-. -.-. .- .--. --.. -- -.-- .-. - - ...- -.-- .-.. .-. -- . .... .-. -..- .--. .-. .-. - .-. .-. .-. .--- -..- -- --- .-. -. -- . .-.. -.-. -..- .. .- --.. --.. -..- ..-. .--. .... -... .-. .--. -..- ..-. .-.. - ...- -.-- .--. .. -.- . --- ..- --. --. .. -... ..-. --. ... ..- -.-. --.- .-- -.. . -.-- .-.. - . .--- -.. --- ..- --. --. .. -.-- -.-- -. -. --.. --.. -..- ..-. - -. -..- ..- --.- -- ..- .-.. ... .--. ..- -.-- .--- --. --- . .- --.. - --. -- ..-. .-.. --.- .-.. --.. .--. .--- --.. .-- --. --. .-- .--. -.- .-.. -.. - -.- .... -- .-. ... --- .... --.. --- -- --.- -. --- .. -.- -.-. -.-. -.-- -.-- -.. ..- --. --- .-.. -- .- . --.- -. .--. .- -- ..-. .-.. --.- .-. .--. . -... -..- . --. ..- ... .. .--. -- ..- --. --- --- -- -... -.-- - -..- - --.. .- .-. ... . .- -.-. ... ... --. .... --- .... .-. --- ..-. -.-. ..-. .--. -. -- .-.. -- .-.. -.. - .--- --- . .-.. .-. ... . . -.- -.. ... ... -.-. -.-. .-. -.-- ... .. ..- - .-.. -.-- -. .-.. --.. -.-. .-.. ...- -. --- .-- . --.. .-- . ...- --.. .... -- .--- .-- -... .-. -. .-.. ...- -... . --- -. -... --.. -- -... --- . --. -.- -. -..- --. --.. -. --- . -.. -..- -.-- .--- .. .- -- .-.. .- -.-- .--- .-.. .-. --.. .-.. .--. -- -.-- . --- . --.- ... .--- .-- --- .--- --- -.-- -.- ..-. - -- --. ..- . .-.. -.-. --.. ..-. ... --- -. .. --. .- .-.. -. - . ... ..-. --.. .-.. .-. .- .- -- .-.. .-.. .-. -.-- --- -.-- -.- .-. --.. -. ...- --.. -.. .-.. -- ..-. .-.. --.- .... .--. ..-. ... -.. -.-- .-. - --.. -.-- . ... - -... -- - --.. -.-. -..- . .--. ..- --. .. .--. -. .- .- . --.. -.-- .... --.. .. .- ... .--. .-.. -.-. -.-. . .--- -.- -.-- .. -.-. --- - -... ... .-.. --- -.-. .-.. -. .-. -.-. .- .--. -.-- -.-- .--- -... .--- - .."), "")
+    test.run()
     test_num += 1
+
+    # Test using previous challenges
+    with open("data/tests.json", "r") as my_file:
+        data = json.load(my_file)
+
+    for challenge in data["test_ciphers"]:
+        print(challenge)
+        print(f"\n{test_num}. Trying {challenge['name']}")
+
+        decrypt_a = auto_solve(challenge["ctext_a"])
+        decrypt_b = auto_solve(challenge["ctext_b"])
+
+        print(f"\nPart A decrypt: {decrypt_a}")
+        print(f"Official Part A decrypt: {challenge['answer_a']}")
+
+        print(f"\nPart B decrypt: {decrypt_b}")
+        print(f"Official Part B decrypt: {challenge['answer_b']}")
+
+        test_num += 1
 
     # Test the load cipher from file function
     test_num += 1
