@@ -7,9 +7,14 @@ class AffineSolver(CipherSolver):
     """
 
     def __init__(self) -> None:
+        # Initialise the super class
         super().__init__()
 
     def with_key(self, message: str, key: tuple) -> str:
+        """
+        Function to decrypt the cipher using given keys
+        """
+
         # Get separate keys
         if (type(key) == tuple):
             if (len(key) >= 2):
@@ -34,6 +39,10 @@ class AffineSolver(CipherSolver):
             raise Exception("Affine solver: a tuple of 2 keys is required!")
 
     def brute_force(self, message: str) -> str:
+        """
+        Function to decrypt the cipher using brute force
+        """
+
         best_score = -99e9
         best_msg = ""
         for b in range(25):

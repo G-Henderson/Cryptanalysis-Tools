@@ -1,12 +1,16 @@
-from utils.stat_measurer import StatMeasurer
 from utils.ngrams_scorer import NgramScorer, NgramFiles
 from utils.cipher_solver import CipherSolver
 
+# Create class for storing top 100 keys
 class BestList(object):
 
-    def __init__(self, max_len=100) -> None:
+    """
+    A list to store the top 100 keys 
+    """
+
+    def __init__(self) -> None:
         self.my_list = []
-        self.max_len = max_len
+        self.max_len = 100
 
     def add(self, item) -> None:
         # Add the item to the list
@@ -24,7 +28,7 @@ class BestList(object):
         # Return the length of the best list
         return len(self.my_list)
 
-
+# Main class
 class VigenereSolver(CipherSolver):
 
     """
@@ -32,6 +36,7 @@ class VigenereSolver(CipherSolver):
     """
 
     def __init__(self) -> None:
+        # Initialise the super class
         super().__init__()
 
         # Setup trigram scorer instances
@@ -41,6 +46,10 @@ class VigenereSolver(CipherSolver):
         self.ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def with_key(self, message: str, key: str) -> str:
+        """
+        Function for decrypting ciphertext from known key
+        """
+
         # Initialise the variable to store the decrypted text
         decrypt = ""
 
@@ -55,6 +64,11 @@ class VigenereSolver(CipherSolver):
         return decrypt
 
     def with_keylen(self, message: str, keylen: int) -> str:
+        """
+        Function for decrypting ciphertext from known key length
+        """
+
+        # Create a best list
         best_list = BestList()
 
         # Find first 3 letters of key using permutations
@@ -116,13 +130,17 @@ class VigenereSolver(CipherSolver):
         return self.with_key(message, best_key)
 
     def brute_force(self, message: str) -> str:
+        """
+        Function for decrypting ciphertext using brute force
+        """
+
         # Setup variables to store the best key length
         # and highest score
         best_keylen = 0
         best_score = -99e9
 
-        # Try key lengths of 3 up to 20
-        for keylen in range(3, 21):
+        # Try key lengths of 3 up to 10
+        for keylen in range(3, 11):
             # Decrypt using the current key length
             decrypt = self.with_keylen(message, keylen)
             # Score the current decrypt
@@ -145,7 +163,7 @@ class VigenereSolver(CipherSolver):
 
     def get_permutations(self, characters, permutation_length: int=None) -> list:
         """
-        Gets the permutations 
+        Generates permutations of a specific length using the list of characters specified
         """
 
         # Create list to store permutations in
@@ -155,7 +173,6 @@ class VigenereSolver(CipherSolver):
         num_chars = len(characters)
         if (permutation_length == None):
             permutation_length = num_chars
-
         
         indices = [i for i in range(num_chars)]
         cycles = [i for i in range(num_chars, num_chars-permutation_length, -1)]
@@ -179,30 +196,5 @@ class VigenereSolver(CipherSolver):
                     break
             
             else:
+                # Return the permutations
                 return my_permutations
-
-    def get_period(self, message: str) -> int:
-        # Find the I.C's of key lengths between 2 and 15
-        for a in range(2,16):
-            sequences = []
-            for b in range(a):
-                current = ""
-                more_letters = True
-                index = b
-                while more_letters:
-                    try:
-                        current += message[index]
-                        index += a
-                    except:
-                        more_letters = False
-
-                sequences.append(current)
-
-            total = 0
-            for b in range(len(sequences)):
-                total += self.mFitTester.get_ic(sequences[b])
-
-            average = total / len(sequences)
-            print(str(a)+":  "+str(average))
-
-        return 0

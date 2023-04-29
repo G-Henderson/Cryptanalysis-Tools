@@ -27,6 +27,10 @@ class CipherIdentifier:
         self.message = message
 
     def identify(self, message: str=None) -> str:
+        """
+        Main function called from outside class to identify type of cipher
+        """
+        
         # Check if it is morse code
         if (self.is_morse(message)):
             return self.MORSE

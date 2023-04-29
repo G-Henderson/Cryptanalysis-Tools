@@ -5,7 +5,7 @@ from utils.stat_measurer import StatMeasurer
 class CipherSolver():
 
     """
-    Template class for decrypting ciphertexts
+    Super class for decrypting ciphertexts
     """
 
     def __init__(self) -> None:
@@ -16,6 +16,7 @@ class CipherSolver():
 
     def solve(self, message: str, key=None, keylen: int=None) -> str:
         """
+        Main function called from outside the class
         Function for decrypting the cipher
         """
 
@@ -45,12 +46,24 @@ class CipherSolver():
         return decoded_msg
 
     def with_key(self, message: str, key) -> str:
+        """
+        Function for decrypting ciphertext from known key
+        """
+
         return "Error: Solving with key unavailable..." # Default return message
 
     def with_keylen(self, message: str, keylen: int) -> str:
+        """
+        Function for decrypting ciphertext from known key length
+        """
+
         return "Error: Solving with key length unavailable..." # Default return message
 
     def brute_force(self, message: str) -> str:
+        """
+        Function for decrypting ciphertext using brute force
+        """
+
         return "Error: Solving by brute force unavailable..." # Default return message
     
     def get_permutations(self, list_chars: list) -> list:

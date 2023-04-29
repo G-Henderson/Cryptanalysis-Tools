@@ -7,9 +7,14 @@ class ColumnarTranspositionSolver(CipherSolver):
     """
 
     def __init__(self) -> None:
+        # Initialise the super class
         super().__init__()
 
     def with_key(self, message: str, key: str) -> str:
+        """
+        Function to decrypt the cipher using a given key
+        """
+
         # Setup grid
         grid = self.create_grid(message, key)
 
@@ -28,6 +33,10 @@ class ColumnarTranspositionSolver(CipherSolver):
         return output
 
     def with_keylen(self, message: str, keylen: int) -> str:
+        """
+        Function to decrypt the cipher using a given key length
+        """
+
         # Get the number of characters needed for the key
         my_chars = [self.ALPHABET[i] for i in range(keylen)]
 
@@ -61,6 +70,10 @@ class ColumnarTranspositionSolver(CipherSolver):
         return decrypt
 
     def brute_force(self, message: str) -> str:
+        """
+        Function to decrypt the cipher using brute force
+        """
+
         # Setup empty variable to store the best scoring message
         best_message = ""
         # Setup really low score as benchmark
@@ -88,6 +101,10 @@ class ColumnarTranspositionSolver(CipherSolver):
         return best_message
 
     def create_grid(self, message: str, key: str) -> list:
+        """
+        Function to put the ciphertext into a grid (2D List) for decryption
+        """
+
         # Put key into list
         key_as_list = list(key.upper())
 

@@ -1,4 +1,3 @@
-import json
 import sys
 
 from utils.cipher_identifier import CipherIdentifier
@@ -20,7 +19,11 @@ from utils.stat_measurer import StatMeasurer
 
 class MenuOption:
 
-    def __init__(self, option_name: str, keys: str, option_function) -> None:
+    """
+    Class for creating menu options
+    """
+
+    def __init__(self, option_name: str, keys: list, option_function: str) -> None:
         self.option_name = option_name
         self.keys = keys
         self.option_function = option_function
@@ -31,13 +34,18 @@ class MenuOption:
     def getKeys(self) -> list:
         return self.keys
     
-    def getOption_function(self):
+    def getOption_function(self) -> str:
         return self.option_function
     
     def __str__(self) -> str:
         return self.option_name
     
 class Menu:
+
+    """
+    Class for creating a menu
+    (List of menu options)
+    """
 
     def __init__(self, menu_name: str, menu_options: list=[]) -> None:
         self.menu_name = menu_name # Set menu name
@@ -57,74 +65,6 @@ class Menu:
         print("Options:", end=" ")
         for count, option in enumerate(self.menu_options):
             print(f"{count+1}. {option.getOption_name()} ({option.getKeys()[0]})", end=" ")
-
-def create_menu():
-    # Create list of menu options
-    options = [MenuOption('Enter new ciphertext', ['new', 'n'], "enter_message"),
-                MenuOption('Load ciphertext', ['load', 'l'], "load_message"),
-                MenuOption('Get Help', ['help', 'h', '?'], "get_help"),
-                MenuOption('Run tests', ['test', 't'], "run_tests"),
-                MenuOption('Exit', ['exit', 'x', 'e'], "sys.exit")
-        ]
-
-    # Create menu object
-    main_menu = Menu("Main Menu", options)
-    ciphertext = ""
-    plaintext = ""
-
-    while True:
-        # Display the main menu
-        main_menu.display()
-        # Get the user's command
-        command = get_user_input()
-        my_option = None
-        # Search for their command
-        for option in main_menu.getMenu_options():
-            if (command in option.getKeys()):
-                my_option = option
-                break
-
-        else:
-            # Command wasn't found
-            print("\nPlease enter a valid command!! Type 'h' for help...")
-        
-        # Run the command
-        if (my_option != None):
-            # Sort input for function
-            args = ""
-            if (my_option.getOption_name() == "Auto Decrypt"):
-                extra = ciphertext
-                args = "extra"
-
-            elif (my_option.getOption_name() == "Manual Decrypt"):
-                extra = ciphertext
-                args = "extra"
-
-            elif (my_option.getOption_name() == "Enter new ciphertext"):
-                extra = main_menu
-                args = "extra"
-
-            elif (my_option.getOption_name() == "Frequency graph"):
-                extra = ciphertext
-                args = "extra"
-
-            # Run function
-            output = eval(f"{my_option.getOption_function()}({args})")
-
-            # Deal with output from function
-            if (my_option.getOption_name() == "Load ciphertext") or (my_option.getOption_name() == "Enter new ciphertext"):
-                main_menu = output[0]
-                ciphertext = output[1]
-
-            elif (my_option.getOption_name() == "Auto Decrypt"):
-                plaintext = output
-                # Print the decrypted message
-                print(f"\nHere is your decrypted message: {plaintext}.")
-
-            elif (my_option.getOption_name() == "Manual Decrypt"):
-                plaintext = output
-                # Print the decrypted message
-                print(f"\nHere is your decrypted message: {plaintext}.")
 
 def get_user_input(msg: str="Enter command:") -> str:
     """
@@ -148,7 +88,6 @@ def enter_message(menu: Menu) -> list:
     menu.add_menu_option(MenuOption('Auto Decrypt', ['auto', 'a'], "auto_solve"))
     menu.add_menu_option(MenuOption('Manual Decrypt', ['man', 'manual', 'm'], "manual_solve"))
     menu.add_menu_option(MenuOption('Frequency graph', ['graph', 'g'], "create_graph"))
-    menu.add_menu_option(MenuOption('Save', ['save', 's'], "save_to_file"))
 
     # Return menu and message
     return [menu, message]
@@ -318,11 +257,16 @@ def identify(message: str) -> tuple:
     if (cipher_type == "morse"):
         print(f"\nDecoding morse and trying again...")
         morse_translator = MorseTranslator()
-        identify(morse_translator.decode(message))
+
+        # Try identifying again
+        cipher_identifier, cipher_type = identify(morse_translator.decode(message))
+
     elif ("un" not in cipher_type):
         print(f"\nI identified your cipher to be a {cipher_type} cipher. I will now try to decrypt it...")
+
     elif (cipher_type == "uniform"):
         print(f"\nI found that your cipher had uniform distribution. I will try and solve it using the Vigenere solver...")
+
     else:
         print("\nI was unable to determine the type of cipher used...")
 
@@ -331,27 +275,11 @@ def identify(message: str) -> tuple:
 
 
 def run_tests():
-    # Run automated tests
+    """
+    Function to run automated tests
+    """
+    
     test_num = 1
-
-    # Test using previous challenges
-    my_file = open('data/tests.json')
-    data = json.load(my_file)
-
-    for challenge in data["test_ciphers"]:
-        print(challenge)
-        print(f"\n{test_num}. Trying {challenge['name']}")
-
-        decrypt_a = auto_solve(challenge["ctext_a"])
-        decrypt_b = auto_solve(challenge["ctext_b"])
-
-        print(f"\nPart A decrypt: {decrypt_a}")
-        print(f"Official Part A decrypt: {challenge['answer_a']}")
-
-        print(f"\nPart B decrypt: {decrypt_b}")
-        print(f"Official Part B decrypt: {challenge['answer_b']}")
-
-        test_num += 1
 
     text_utils = TextUtils()
     # 1. Test the space removal
@@ -584,50 +512,114 @@ def run_tests():
     new_graph.show()
     test_num += 1
 
-    # Test unknown cipher encoded with morse code
+    # 38. Test unknown cipher encoded with morse code
     test = Test(f"\n{test_num}. Test an unknown cipher encoded with morse code...")
     test.setTest(lambda: auto_solve("... .- . -..- .--- -..- ..-. .--. .-.. -. ... .- .--. --. .-. .... --. -.- -.-. .-- . .-.. ...- .-. ... .--. . --.. --.. -..- --. ..- . ...- -.-- -. -.- --. --. .-- .--. -.- .-.. -.. - -.- -.. - ..-. --.. -. .-. -.-- - -.- .-.. .-.. .-.. -. - --- -- -.. --.. .-.. -.-- ..- .... .. -... ... .. --.. - --.. ...- .-. ... . -. -.-- . ... ... . --- ... .. ..-. .--. -. .--. .--. .-. -..- --.. .-. .-. ... . ..- --- .-. .-.. ..- .-.. -.-- ...- .. .-- ... --.- .--. -.. ..- --- -..- .... -- .... -. .-- .- -.. -..- -.-- -.. .... .-. -.-. .-.. .-- .... --.. .. .- --- -.-- -.- .-. ... . ...- -.-- - -... .-. .--- ... ...- -.. .-.. .-. -... - -- --.. -.- --- -- -.-- . . -.-- . .... -- --.- ... . --.- --- ... . -... -.-- - .--- -.- .... .. .--. .--. .... .-. --. --- -- .-.. .-. ..-. -... -..- .... . --.- ... .. .- -- . ... .-.. .-.. -. --.- --- -- .. . .-.. -. --. ..- .-. .. .-. .-.. -... -. .--- --.- .. -.-. .-- .. .- -- .-.. ..-. -- ..-. - ...- --.. . .-.. -.-- . -.-. . . -.. -..- -.-- .-- .-.. ...- -.-- .--. .... --. -.-- - -... --. --- .. -.-. .- ..- .- -.- .-.. .-- --. -.-- . ..-. -.-- .-.. .-- ..-. .--. - .... -..- -.-- .. -... --.. ..-. ... ..- -.-- -..- -- . .... .-. -- .--. ... .--. .-. . --. ..- .... .-. -. - -.- .-. --. -.-- .... --. -.-. . -. .-. - .-- -.-. --- .-- ..- -.- -.-. .. ..-. .--. .-- -. -.-- ... .. -.-- --- .. .- -- .... .. ..-. .-.. ...- .-. --. .- ...- -- -- .-.. .-. ... - -. ... -.. - --.- ..- -.-- -..- .. -.-- --- .--- -.-. ... . .-. -.. --- . --.. --.. ...- ..-. --.. .-- --- --- .-. ..-. ... . .-- .-. - .--. .. -... . --- ... --- -.-- .... -- ..-. - -.. .- - --. .. .-- -.-- ...- .... .-.. --. .. .--. -.. -... .-.. --.- . .-.. --- -.-. .... --.. . .-.. -.-. . .-. -. .. .--. -- .-.. -. .- ..-. -.- - -..- .-. -.-. .. - -- .--. ...- -.-. --- .- .- --. ..-. -..- -- -..- .- --. --- -. . .--- .--. .-. --. -. .--. .-.. -.-- -.. .- .--. .. .--. .-- --.- . --- -. .-. --.. -..- -.- --.. .-. .-. --.. .--. --. ..-. -.-- --- -.-- ..- .-. -.-. .-. ... .- .- -.-. .--. .... -- .-.. -. --.- --- -. . .-.. . -... .-. -.-- ..-. ...- -.-. . .... -. --.. . .-.. -.-. .- .... -... - .--. -..- .--. .-.. -.-. .-. --- -.. -.-- .-.. --- . --. -.- -. -..- -.-- -- .-.. .-. --- .-.. --.- --.- ..-. .-. .-. --.. ... . .-. ... .. ..-. -.- -..- - .--- --.. -.-- .-. -..- -.. .- --. .-- .-.. .- ..- . ..-. -.-. ... .- -.-. ...- .--- -..- -- --.- .. .- .--- -..- .. -- -.-- .... ...- -.-- . . --. .-- .- .- .--- - --. -.-. -.-. - -. --- -.-- .--. .-- --- --- .- --.. .... . .-.. . - -... -.-- .- .. .-.. --- - ...- ... .--. -- .-.. .-.. -... -. -.-- .--. --.- -.-. -.-- - --. -..- .--- -- .-.. .-. - -... -.- .. - .--- .-.. .. .- ... .--- .-- -.-. .-- ..-. --. ..- . .-.. -.-. -..- .. .--. --. .-- .--. -.-. --- --- ... .-.. . .-.. -.-. .-- .- --.. ...- .-- -- . ... - .-. -..- -.. ..-. -.-. --.- --- . -.- . .-.. -.-. .--- -.-. -... .- .-- .... .--. .--. .- -.-- --- -.. .. ..- ... --- ..- -.- .... . --.- .... --- . --.- - .-. . --.- --- . --- . .- -.-- -.. --- .- -.- . .-.. --. -.-- --. -. -.-- ...- -- .-.. .-. - ..- -.- -..- .--- -- -.-. .- ... --. --. ... ... -.-. .-- ..- -.- -.-- -- .-. ... --- .... -- ... -..- .-. ... .. ..-. -.-. .-.. .-- -.-- -.-. --- .... --.. - .-. -.-. -. --- --.. ... .--. ...- .- - .- -.-- .. --.. .-. .-. -.-. .- .--. --.. -- -.-- .-. - - ...- -.-- .-.. .-. -- . .... .-. -..- .--. .-. .-. - .-. .-. .-. .--- -..- -- --- .-. -. -- . .-.. -.-. -..- .. .- --.. --.. -..- ..-. .--. .... -... .-. .--. -..- ..-. .-.. - ...- -.-- .--. .. -.- . --- ..- --. --. .. -... ..-. --. ... ..- -.-. --.- .-- -.. . -.-- .-.. - . .--- -.. --- ..- --. --. .. -.-- -.-- -. -. --.. --.. -..- ..-. - -. -..- ..- --.- -- ..- .-.. ... .--. ..- -.-- .--- --. --- . .- --.. - --. -- ..-. .-.. --.- .-.. --.. .--. .--- --.. .-- --. --. .-- .--. -.- .-.. -.. - -.- .... -- .-. ... --- .... --.. --- -- --.- -. --- .. -.- -.-. -.-. -.-- -.-- -.. ..- --. --- .-.. -- .- . --.- -. .--. .- -- ..-. .-.. --.- .-. .--. . -... -..- . --. ..- ... .. .--. -- ..- --. --- --- -- -... -.-- - -..- - --.. .- .-. ... . .- -.-. ... ... --. .... --- .... .-. --- ..-. -.-. ..-. .--. -. -- .-.. -- .-.. -.. - .--- --- . .-.. .-. ... . . -.- -.. ... ... -.-. -.-. .-. -.-- ... .. ..- - .-.. -.-- -. .-.. --.. -.-. .-.. ...- -. --- .-- . --.. .-- . ...- --.. .... -- .--- .-- -... .-. -. .-.. ...- -... . --- -. -... --.. -- -... --- . --. -.- -. -..- --. --.. -. --- . -.. -..- -.-- .--- .. .- -- .-.. .- -.-- .--- .-.. .-. --.. .-.. .--. -- -.-- . --- . --.- ... .--- .-- --- .--- --- -.-- -.- ..-. - -- --. ..- . .-.. -.-. --.. ..-. ... --- -. .. --. .- .-.. -. - . ... ..-. --.. .-.. .-. .- .- -- .-.. .-.. .-. -.-- --- -.-- -.- .-. --.. -. ...- --.. -.. .-.. -- ..-. .-.. --.- .... .--. ..-. ... -.. -.-- .-. - --.. -.-- . ... - -... -- - --.. -.-. -..- . .--. ..- --. .. .--. -. .- .- . --.. -.-- .... --.. .. .- ... .--. .-.. -.-. -.-. . .--- -.- -.-- .. -.-. --- - -... ... .-.. --- -.-. .-.. -. .-. -.-. .- .--. -.-- -.-- .--- -... .--- - .."), "")
     test.run()
     test_num += 1
 
-    # Test using previous challenges
-    with open("data/tests.json", "r") as my_file:
-        data = json.load(my_file)
-
-    for challenge in data["test_ciphers"]:
-        print(challenge)
-        print(f"\n{test_num}. Trying {challenge['name']}")
-
-        decrypt_a = auto_solve(challenge["ctext_a"])
-        decrypt_b = auto_solve(challenge["ctext_b"])
-
-        print(f"\nPart A decrypt: {decrypt_a}")
-        print(f"Official Part A decrypt: {challenge['answer_a']}")
-
-        print(f"\nPart B decrypt: {decrypt_b}")
-        print(f"Official Part B decrypt: {challenge['answer_b']}")
-
-        test_num += 1
-
-    # Test the load cipher from file function
+    # 39. Test using previous challenge 1a
+    test = Test(f"\n{test_num}. Testing with previous challenge 1a...")
+    test.setTest(lambda: auto_solve("GZQQX, H ZL ANQDC, ZMC H ZL QDZKKX MNS RTQD VGX H GZUD ADDM DWHKDC SN SGD ZQBGZDNKNFHRSR. CHC H CN RNLDSGHMF SN TORDS RNLDNMD? H ZL QDZKKX, QDZKKX GNOHMF SGZS NTQ NUDQKNQCR VHKK EHMC RNLDSGHMF Z AHS LNQD QDKDUZMS ENQ LD SN SZBJKD RNNM. SGD FQNTO GDQD HR FQDZS, ATS HS EDDKR KHJD SGDQD HR Z CHLHMHRGHMF QDSTQM NM AQDZJHMF VVHH BHOGDQR RDUDMSX-RHW XDZQR NM, ZMC DUDM SGD BNKC VZQ EHZKJZ HMSDQBDOS OHKD CNDRM'S RDDL SN AD FHUHMF LTBG AZBJ. HE XNT CNM'S GZUD ZMXSGHMF ENQ LD SN VNQJ NM, SGDM LZXAD XNT BNTKC RDMC NUDQ RNLD MDVAHDR ENQ LD SN SQZHM TO? VD QDBDHUDC Z RSZBJ NE LZSDQHZK EQNL KNMCNM Z BNTOKD NE VDDJR ZFN SGZS LHFGS LZJD Z FNNC DWDQBHRD ENQ SGDL, ZMC VGHKD SGD EHQRS EDV SDWSR ZQD QDKZSHUDKX RHLOKD, HS VNTKC AD Z FNNC DWDQBHRD ENQ XNTMF ZMZKXRSR SN SQX SN VNQJ NTS VGZS SGDX ZQD SDKKHMF TR. H GZUD ZSSZBGDC SGD EHQRS HSDL EQNL SGD AZSBG RN XNT BZM RDD VGZS H LDZM. H VNTKC UDQX CDZQKX KHJD SN JMNV VGZS \"SGD FQDZS LZSSDQ\" QDEDQR SN, ZMC H RTRODBS XNT VHKK VZMS SN JMNV SNN. SGD QDBQTHSR CNM'S MDDC SN JMNV LTBG SN AQDZJ SGHR NMD; HE SGDX GZUD CNMD NTQ HMCTBSHNM SQZHMHMF NM AZRHB BHOGDQR, SGDX RGNTKC AD EHMD. LX BNKKDZFTDR GDQD GZUD MHBJMZLDC SGHR EHKD SGD KHFGSGNTRD BNMROHQZBX, ADBZTRD NE VGDQD SGD OZODQR VDQD ENTMC. SGZS LZJDR HS RNTMC Z KNS LNQD HLOQDRRHUD SGZM HS EHQRS KNNJR, ATS XNT MDUDQ JMNV VGDQD RNLDSGHMF KHJD SGHR LHFGS KDZC. H GZUD RDS TO Z RDBTQD NMKHMD RXRSDL RN SGD SQZHMDDR BZM FDS ZBBDRR SN BZRD EHKDR ZMC RDMC LD SGDHQ ZSSDLOSR ZS CDBHOGDQHMF. HE XNT ONHMS SGDL SGDQD, SGDM H VHKK BGDBJ GNV SGDX ZQD FDSSHMF NM. LZXAD SGDX BNTKC KNNJ ZS SGD ANRR BNCDAQDZJHMF FTHCD ZR VDKK HE SGDX MDDC SN AQTRG TO SGDHQ RJHKKR. ZKK SGD ADRS, INCHD"), "")
+    test.run()
     test_num += 1
 
-    # Test saving the cipher to the file
+    # 40. Test using previous challenge 1b
+    test = Test(f"\n{test_num}. Testing with previous challenge 1b...")
+    test.setTest(lambda: auto_solve("PB GHDU P, WKDQN BRX IRU OHWWLQJ PH NQRZ DERXW W'V RIIHU WR MRLQ ZLWK XV LQ WKH JUHDW PDWWHU. ZKLOH L VWLOO KDYH PDQB LGHDV IRU KRZ WR SURVHFXWH RXU SODQ, PB GDBV DUH JURZLQJ VKRUW, DV DUH BRXUV, DQG ZH ZLOO QHHG WR ILQG RWKHUV RI D VLPLODU PLQG ZKR KDYH WKH ZLW DQG LPDJLQDWLRQ WR FDUUB LW IRUZDUG. RXU DELOLWB WR LQIOXHQFH PDWWHUV GLUHFWOB ZLOO FRQWLQXH WR GHSHQG RQ WKH SRZHU RI WKH GHYLFHV ZH FDQ IDVKLRQ, DQG LW ZLOO EH FOHDU WR BRX WKDW WKLV ZLOO UHTXLUH QHZ ZDBV RI WKLQNLQJ DERXW WKH ZRUOG DV ZHOO DV QHZ WHFKQRORJLHV WR PDQLSXODWH LW. W, WRJHWKHU ZLWK O DQG WKH BRXQJ H ZLOO, L KRSH, EULQJ D QHZ SHUVSHFWLYH, DQG KHOS WR NHHS RXU OLWWOH FRQVSLUDFB DOLYH IRU DQRWKHU JHQHUDWLRQ. RXU DGYHQWXUHV VR IDU KDYH, RI QHFHVVLWB, EHHQ OLPLWHG LQ VFRSH, WKRXJK RXU DFTXLVLWLRQ RI EDEEDJH'V SODQV DQG WKH VXSSUHVVLRQ RI KLV DQDOBWLF HQJLQH PXVW FRXQW DV D KLJKOLJKW. LI ZH DUH WR VXFFHHG RQ WKH JUDQG VFDOH WKDW ZH ERWK WKLQN LV QHFHVVDUB, WKHQ LW LV WLPH IRU XV WR IRUPDOLVH RXU DUUDQJHPHQWV DQG WR HVWDEOLVK D KHDGTXDUWHUV IRU RXU RSHUDWLRQV. L KDYH JLYHQ WKLV VRPH WKRXJKW DQG KDYH DQ LGHD WKDW L KRSH ZLOO SOHDVH BRX. ZH VKRXOG EXLOG D OLJKWKRXVH LQ ORQGRQ! L FDQ LPPHGLDWHOB VHH BRXU REMHFWLRQ. ORQGRQ KDV QR URFNB VKRUHV, DQG VR QR QHHG RI RQH, EXW BRXU HASHULPHQWV ZLWK ODQWHUQV JLYH XV WKH LGHDO HAFXVH WR EXLOG RQH DV D SODFH WR WHVW WKHP. WKH RSSRUWXQLWLHV WKLV ZLOO DIIRUG DUH PDQB: WKH GHOLYHUB RI ODUJH FUDWHV RI HTXLSPHQW ZLOO JR XQQRWLFHG, FRQVLGHUHG DV SDUW RI WKH QDWXUDO EXVLQHVV RI WKH SODFH; LWV ORFDWLRQ RQ D EXVB ZKDUI ZRXOG GLVJXLVH WKH QHFHVVDUB FRPLQJV DQG JRLQJV RI RXU FR-FRQVSLUDWRUV; WKH ZDWHUZDB ZLOO SURYLGH XV ZLWK UHDGB WUDQVSRUWDWLRQ ERWK LQODQG YLD WKH FDQDOV DQG WR WKH GRFNV DW WLOEXUB IRU RXU LQWHUQDWLRQDO YHQWXUHV. QRW OHDVW, WKH HAWUDRUGLQDUB SRZHU QHHGHG IRU RXU GHYLFHV ZLOO EH PLVWDNHQ IRU WKH HQHUJB UHTXLUHG WR UXQ BRXU SXEOLF HASHULPHQWV. L KDYH OLWWOH HASHUWLVH LQ WKH GHVLJQ RU HQJLQHHULQJ RI VXFK VWUXFWXUHV, EXW L LPDJLQH WKDW WKHB UHTXLUH VXEVWDQWLDO IRRWLQJV. WKH GHYHORSPHQW RI WKHVH ZLOO SURYLGH WKH FRYHU ZH QHHG WR FRQVWUXFW RXU VHFUHW KHDGTXDUWHUV XQGHU WKH PRUH SXEOLF IDFH RI WKH OLJKWKRXVH LWVHOI DQG LWV DQFLOODUB EXLOGLQJV. LW PDB EH WKDW L KDYH PLVVHG VRPHWKLQJ LPSRUWDQW LQ PB FRQVLGHUDWLRQV, LQ ZKLFK FDVH SOHDVH GR SRLQW WKDW RXW, EXW LI ZH DUH WR SDVV RQ RXU GLVFRYHULHV, DPELWLRQV DQG SODQV WR WKH QHAW JHQHUDWLRQ ZH ZLOO QHHG WR JLYH WKHP D PRUH SHUPDQHQW KRPH, VR L KRSH ZH FDQ DJUHH WRJHWKHU RQ WKH EHVW ZDB WR SURFHHG. BRXUV, FK"), "")
+    test.run()
     test_num += 1
 
-    # Test the help command
+    # 41. Test using previous challenge 2a
+    test = Test(f"\n{test_num}. Testing with previous challenge 2a...")
+    test.setTest(lambda: auto_solve("Ibgzp, nbd vpcp sbu kafxpg vzuq uqp Fcxqfpbabhzlul fl f kdszlqjpsu; pmpcnbsp ufrpl uqpzc udcs bs uqfu lqzyu opxfdlp vp spmpc rsbv vqfu jzhqu udcs dk zs bag gbxdjpsul. Vqps Z cfs uqp hcbdk, vp ybdsg pmzgpsxp by f Cdllzfs fhpsu kafxpg zs uqp LGPXP zs uqp fyupcjfuq by uqp vfc vqb vfl fxuzsh fl azfzlbs vzuq Oczuzlq fsg DL zsupaazhpsxp. Lqp qfg cpjfzspg dsgzlxbmpcpg ybc uqzcun-yzmp npfcl fsg apfrpg f vqbap abfg by zsybcjfuzbs fxcbll uqp zcbs xdcufzs. Uqp upfj xcfxrpg f Yzfarf xzkqpc ycbj 1956, fsg uqfu apg ub fs fccplu fsg xbsypllzbs. Z fgjzu uqfu uqp xflp nbd fcp vbcrzsh bs gbpls'u lppj azrpan ub qfmp uqp lfjp zjkfxu, odu nbd spmpc rsbv vqpcp zu jzhqu apfg. Z ubbr f abbr fu uqp kfkpcl nbd lpsu, fsg Z uqbdhqu uqzl bsp abbrpg mpcn zsupcpluzsh. Uqp zsybcjfuzbs zu xbsufzsl uzpl gbvs uqp npfc zu vfl vczuups kcpuun xbsxadlzmpan, fsg Z qfmp ub lfn Z gbs'u azrp uqp lbdsg by uqp kqcflp “kcbyzu ycbj uqp Lxqaplvzh xbsyazxu”. Z uqzsr zu zl xapfc vqb J jdlu op, odu Z fj luzaa dsldcp fobdu uqp buqpcl jpsuzbspg zs uqplp apuupcl. Z fj falb mpcn dsxapfc vqn J jzhqu qfmp opps zsmbampg zs vqfu abbrl azrp f xbslkzcfxn fzjpg fu vfcuzjp kcbyzuppczsh. Z xqpxrpg, fsg uqpcp zl sbuqzsh bs yzap ycbj uqp kpczbg ub ldhhplu uqfu uqzl vfl ldlkpxupg. Zsgppg uqpcp vfl sbuqzsh bs yzap fu faa, vqzxq, uqzsrzsh fobdu zu zl lazhquan lucfshp. J vfl f kdoazx yzhdcp fsg by gpyzszup zsupcplu, lb uqpcp lqbdag op lbjpuqzsh. Zy nbd qfmp uzjp zu jzhqu op vbcuq abhhzsh zs ub uqp cpxbcgl lnlupj ub lpp zy fsnbsp palp ycbj fcbdsg uqps qfl f ldlkzxzbdlan pjkun yzap. Z vbdag lufcu vzuq kdoazx yzhdcpl vqb qfmp uqp zszuzfal XQ bc YS, fl uqp lzshap apuupcl F, U, P fsg V gbs'u hzmp dl jdxq ub hb bs. By xbdclp, vp gb rsbv f azuuap jbcp fobdu V, lb uqfu jzhqu falb op f hbbg kafxp ub lufcu. Vp rsbv vp fcp abbrzsh ybc fs pshzsppc vzuq zszuzfa V, vqb rsbvl lbjpuqzsh fobdu xbgpl fsg xzkqpcl. Vqbpmpc YS zl, uqpn fcp czhqu uqfu uqpn lqbdag ufar ub V. Dlzsh Xfplfc fsg fyyzsp lqzyu xzkqpcl ub psxbgp uqpzc lpxcpu xbjjdszxfuzbsl zl kbbc, fsg Z vbdag qfmp pekpxupg opuupc ycbj fs bchfszlfuzbs xbsufzszsh J. Kpcqfkl uqpn vzaa qfmp ufrps uqp jnlupczbdl V'l fgmzxp fsg vzaa qfmp lvzuxqpg ub lbjpuqzsh jbcp lpxdcp zs uqpzc ydudcp xbjjdszxfuzbsl. Uqfu vzaa jfrp azyp f azuuap jbcp zsupcpluzsh ybc nbd fsg uqp upfj. Hbbg adxr, Qfccn"), "")
+    test.run()
     test_num += 1
 
-    # Test the exit command
+    # 42. Test using previous challenge 2b
+    test = Test(f"\n{test_num}. Testing with previous challenge 2b...")
+    test.setTest(lambda: auto_solve("Vx altylju V, Ptg du yltkkx el jdmullg xltyj jdgpl Ptyrkdgl wdyju cyrcrjla usdj qlgufyl? D ptggru elkdlql du tga bdjs bdus tkk vx sltyu ustu jsl prfka stql jllg sly qdjdrg utzdgh jstcl. Ktju Blagljatx D urrz usl rccryufgdux xrf jr zdgakx rwwlyla ur jll usl cyrhyljj bdus usl wrfgatudrg wry vxjlkw. D btj qlyx lgprfythla ex usl dgafjuyx rg adjcktx, srblqly D klwu bdus t prgplyg ustu bl vtx stql vdjptkpfktula dg rfy cktgj ur sdal usl wtpdkdux dg usl etjlvlgu rw usl efdkadgh. Usl qlgudktudrg uslyl bdkk, rw glpljjdux, el wty vryl yljuydpula ustg du brfka el rg usl fccly wkrryj, tj D zgrb wyrv vx rbg yljltyps. Usl lqdalgpl wyrv xrfy lmclydvlguj jfhhljuj ustu rfy alqdpl bdkk cyrafpl t qlyx ktyhl tvrfgu rw sltu dg rclytudrg. D ptggru jtx wry jfyl, efu du jllvj kdzlkx ustu usdj bdkk ptfjl cyreklvj, erus wry usl alqdpl dujlkw tga wry duj rclyturyj. Krrzdgh tu usl cktgj, D brgalyla eydlwkx dw bl prfka sdal du dgjulta rg tg fccly wkrry rw usl kdhsusrfjl, efu xrf tyl kdzlkx ur stql vtgx qdjduryj bsr tyl dgpkdgla ur pfydrjdux, tga D jfjclpu usl jlpylu brfka gru jutx jtwl wry krgh. Bl ptggru utzl tgx ydjz ustu vdhsu lmcrjl fj, tga lqlg dw bl zllc du elsdga t krpzla arry, usl grdjl du bdkk hlglytul dg rclytudrg bdkk cyrcthtul vryl ltjdkx tpyrjj usl bstyw, kltadgh ur nfljudrgj. Dg usl etjlvlgu bl ptg tu kltju jfccyljj usl grdjl, ylafpdgh ustu ydjz, efu ustu kltqlj usl djjfl rw vtgthdgh usl sltu. D tv tu t krjj. Tgx pstghlj bl btgu ur vtzl ur usl aljdhg rw usl kteryturyx tga duj wtpdkdudlj bdkk glla ur el vtal qlyx jrrg, tj rgpl usl fccly wkrryj tyl efdku wfyusly sltqx prgjuyfpudrg brfka tuuytpu fgbtgula tuulgudrg. Clystcj B bdkk el tekl ur jfhhlju jrvlusdgh; sl dj, twuly tkk, tg lghdglly. dg tgx ptjl, D btj cktggdgh ur tjz sdv ur ordg fj tj slta rw jlpfydux. D fgalyjutga ustu sl stj jrvl ytusly dgulyljudgh daltj terfu pralj tga pdcslyj. Rg t kljj cyljjdgh vtuuly, rfy wdyju lmclydvlguj bdus usl cyruruxcl tyl jsrbdgh jrvl jfppljj. Dw bl sta ellg tekl ur yfg uslv ltykdly usdj xlty, bl vtx lqlg stql ellg tekl ur cyrwdu wyrv usl Jpskljbdh prgwkdpu, tga du vtx gru el urr ktul ur ar jr dw bl ptg vredkdjl rfy thlguj. Uslyl dj vfps ur cktx wry slyl. Ruslyj bdkk el jllzdgh ur htdg wyrv usl prgwkdpu, tga D jll gr yltjrg bsx bl ptggru ar jr urr. Lqly xrfyj, WG"), "")
+    test.run()
     test_num += 1
 
+    # 43. Test using previous challenge 3a
+    test = Test(f"\n{test_num}. Testing with previous challenge 3a...")
+    test.setTest(lambda: auto_solve("NOGXI AVBUI WVJXS NLBFE CSKMH XLGTI RKCPX FHBAA EAMIR TVDRI VZFAT RUBEX RYRQH KVBAQ POMYI NVPWF VUHMQ ZURMP CTYPK VDYEX FZYKX YLJQE JAYZY EBQGE CUYYI RUBMR ZURQV ELREI RYATP ZUIQH ZARAE JWWRV FTRTI NHPAJ ZUBQT VUBQR TLRTI FYGSM EHJIE JSCMH VYMRX YLAGP GLPDM ENUTM TOBUH EAQQI DSGWI RJMUR TPBQR TLYZH RUMFL VYHGK FMAAJ WLCSE MLKQX ZTCFS VENXS ILRTI CPLWX YLMDM XPLMP TBJBI IYGZK NHQEI KBNNC NHQTM ENRAR RUBFE CSKMH XLRAW GFMZX YLZDM KPQTA RZFUR XAMZL RKQGK XLQFI UAFQR RTCMR UAYWI EPRRV FTAGP GLNQV TVSZX PCGDK ZUGMQ FZRAJ KOCUV RJRUZ ZAGQW NLPQJ FJSEW VKYDS LUBZI NFMDO TPRKA ZAFFL VHEQR KZYZH JWGQW ILADY ZACPJ IVKXS ENGEP RUBMR UJMZR VJRUG LARTI PDMDO VKDAV RIMGX WPTQC VHPEV VWMDX ZUEAR KOCNV ZAGEL KYMAT DVTQQ VUREY JPLSG FKCEE EKQBC TYYRX KVQFE PBLPI KLAFI UHQRE IHQUG FBJPW VLRTI ILUMW EVPQG FYBAJ KOCDM ENMBI IHRUR XPLAV RYMGR UJSXT VWCDA YPATQ RKCEI EZCZS FUCQZ VYATS FZCEE TVBQR RTCOS EUCOX VKUUX YAFQS GLPMX ZVLNY KAFMX CLDFQ VDMZH VYGZK NOWAY IUCIQ IAYXP DHBSI NHQAT VYYFM ENFQV VHLPA YHRFL VFUQV VBNFS FUYIL ZTGEI RYATI UHLZE JTGFL KHJXQ RKEQE EKRTI ILQGP KDYEE JBPBV ZZCNY KZKUX YPQMG FTKAR EHKQE EKGIE JUREY ILGFQ VHLFE EFRTM ENRTI SHLWZ RBJFA RZAXI RYJKM DWMDX RURNY KZGZG VAFQF FECEH ZKLFG FURMM EHLKX YPLSS KOCDX YHLZY DICDW ZAKGW KICFL VJYEI KOYFX YLLGQ SLPEX YLKEI CCCEL RCCMQ VHLUR XPUMW FURAQ PAFUV UQSSS WJMRJ VLZQJ FYCUJ FBLPX YLAGP GLPOS ULZAS BVLXM ELYZH KOGZK JZRMV KLBFS DHIQW VUQQM UBEAY KAFQP ZZRAJ SVVQW RUBZY DICDW KOYFN FKGQL RKEUZ VUKQE EKQFE IACPX FWSFM KAMSI KOCDF LASZJ FYRGR RACXC ABQFE JPZQK RUKKT YVLQV RUEMR UDFQR ZWGOO VKGFY GPFMH ILAQM MLBMR RBBUS DLQEE XLDDS DQMPM VPRIE JPLYS IZCOS ULYZH VUADC GACPM WZFQA RZRMO ZUEFL RAKGG YJYDI KOCZM BUCIA VTSEX SLGZF ZNRDS LIJQ"), "")
+    test.run()
+    test_num += 1
+
+    # 44. Test using previous challenge 3b
+    test = Test(f"\n{test_num}. Testing with previous challenge 3b...")
+    test.setTest(lambda: auto_solve("... .- . -..- .--- -..- ..-. .--. .-.. -. ... .- .--. --. .-. .... --. -.- -.-. .-- . .-.. ...- .-. ... .--. . --.. --.. -..- --. ..- . ...- -.-- -. -.- --. --. .-- .--. -.- .-.. -.. - -.- -.. - ..-. --.. -. .-. -.-- - -.- .-.. .-.. .-.. -. - --- -- -.. --.. .-.. -.-- ..- .... .. -... ... .. --.. - --.. ...- .-. ... . -. -.-- . ... ... . --- ... .. ..-. .--. -. .--. .--. .-. -..- --.. .-. .-. ... . ..- --- .-. .-.. ..- .-.. -.-- ...- .. .-- ... --.- .--. -.. ..- --- -..- .... -- .... -. .-- .- -.. -..- -.-- -.. .... .-. -.-. .-.. .-- .... --.. .. .- --- -.-- -.- .-. ... . ...- -.-- - -... .-. .--- ... ...- -.. .-.. .-. -... - -- --.. -.- --- -- -.-- . . -.-- . .... -- --.- ... . --.- --- ... . -... -.-- - .--- -.- .... .. .--. .--. .... .-. --. --- -- .-.. .-. ..-. -... -..- .... . --.- ... .. .- -- . ... .-.. .-.. -. --.- --- -- .. . .-.. -. --. ..- .-. .. .-. .-.. -... -. .--- --.- .. -.-. .-- .. .- -- .-.. ..-. -- ..-. - ...- --.. . .-.. -.-- . -.-. . . -.. -..- -.-- .-- .-.. ...- -.-- .--. .... --. -.-- - -... --. --- .. -.-. .- ..- .- -.- .-.. .-- --. -.-- . ..-. -.-- .-.. .-- ..-. .--. - .... -..- -.-- .. -... --.. ..-. ... ..- -.-- -..- -- . .... .-. -- .--. ... .--. .-. . --. ..- .... .-. -. - -.- .-. --. -.-- .... --. -.-. . -. .-. - .-- -.-. --- .-- ..- -.- -.-. .. ..-. .--. .-- -. -.-- ... .. -.-- --- .. .- -- .... .. ..-. .-.. ...- .-. --. .- ...- -- -- .-.. .-. ... - -. ... -.. - --.- ..- -.-- -..- .. -.-- --- .--- -.-. ... . .-. -.. --- . --.. --.. ...- ..-. --.. .-- --- --- .-. ..-. ... . .-- .-. - .--. .. -... . --- ... --- -.-- .... -- ..-. - -.. .- - --. .. .-- -.-- ...- .... .-.. --. .. .--. -.. -... .-.. --.- . .-.. --- -.-. .... --.. . .-.. -.-. . .-. -. .. .--. -- .-.. -. .- ..-. -.- - -..- .-. -.-. .. - -- .--. ...- -.-. --- .- .- --. ..-. -..- -- -..- .- --. --- -. . .--- .--. .-. --. -. .--. .-.. -.-- -.. .- .--. .. .--. .-- --.- . --- -. .-. --.. -..- -.- --.. .-. .-. --.. .--. --. ..-. -.-- --- -.-- ..- .-. -.-. .-. ... .- .- -.-. .--. .... -- .-.. -. --.- --- -. . .-.. . -... .-. -.-- ..-. ...- -.-. . .... -. --.. . .-.. -.-. .- .... -... - .--. -..- .--. .-.. -.-. .-. --- -.. -.-- .-.. --- . --. -.- -. -..- -.-- -- .-.. .-. --- .-.. --.- --.- ..-. .-. .-. --.. ... . .-. ... .. ..-. -.- -..- - .--- --.. -.-- .-. -..- -.. .- --. .-- .-.. .- ..- . ..-. -.-. ... .- -.-. ...- .--- -..- -- --.- .. .- .--- -..- .. -- -.-- .... ...- -.-- . . --. .-- .- .- .--- - --. -.-. -.-. - -. --- -.-- .--. .-- --- --- .- --.. .... . .-.. . - -... -.-- .- .. .-.. --- - ...- ... .--. -- .-.. .-.. -... -. -.-- .--. --.- -.-. -.-- - --. -..- .--- -- .-.. .-. - -... -.- .. - .--- .-.. .. .- ... .--- .-- -.-. .-- ..-. --. ..- . .-.. -.-. -..- .. .--. --. .-- .--. -.-. --- --- ... .-.. . .-.. -.-. .-- .- --.. ...- .-- -- . ... - .-. -..- -.. ..-. -.-. --.- --- . -.- . .-.. -.-. .--- -.-. -... .- .-- .... .--. .--. .- -.-- --- -.. .. ..- ... --- ..- -.- .... . --.- .... --- . --.- - .-. . --.- --- . --- . .- -.-- -.. --- .- -.- . .-.. --. -.-- --. -. -.-- ...- -- .-.. .-. - ..- -.- -..- .--- -- -.-. .- ... --. --. ... ... -.-. .-- ..- -.- -.-- -- .-. ... --- .... -- ... -..- .-. ... .. ..-. -.-. .-.. .-- -.-- -.-. --- .... --.. - .-. -.-. -. --- --.. ... .--. ...- .- - .- -.-- .. --.. .-. .-. -.-. .- .--. --.. -- -.-- .-. - - ...- -.-- .-.. .-. -- . .... .-. -..- .--. .-. .-. - .-. .-. .-. .--- -..- -- --- .-. -. -- . .-.. -.-. -..- .. .- --.. --.. -..- ..-. .--. .... -... .-. .--. -..- ..-. .-.. - ...- -.-- .--. .. -.- . --- ..- --. --. .. -... ..-. --. ... ..- -.-. --.- .-- -.. . -.-- .-.. - . .--- -.. --- ..- --. --. .. -.-- -.-- -. -. --.. --.. -..- ..-. - -. -..- ..- --.- -- ..- .-.. ... .--. ..- -.-- .--- --. --- . .- --.. - --. -- ..-. .-.. --.- .-.. --.. .--. .--- --.. .-- --. --. .-- .--. -.- .-.. -.. - -.- .... -- .-. ... --- .... --.. --- -- --.- -. --- .. -.- -.-. -.-. -.-- -.-- -.. ..- --. --- .-.. -- .- . --.- -. .--. .- -- ..-. .-.. --.- .-. .--. . -... -..- . --. ..- ... .. .--. -- ..- --. --- --- -- -... -.-- - -..- - --.. .- .-. ... . .- -.-. ... ... --. .... --- .... .-. --- ..-. -.-. ..-. .--. -. -- .-.. -- .-.. -.. - .--- --- . .-.. .-. ... . . -.- -.. ... ... -.-. -.-. .-. -.-- ... .. ..- - .-.. -.-- -. .-.. --.. -.-. .-.. ...- -. --- .-- . --.. .-- . ...- --.. .... -- .--- .-- -... .-. -. .-.. ...- -... . --- -. -... --.. -- -... --- . --. -.- -. -..- --. --.. -. --- . -.. -..- -.-- .--- .. .- -- .-.. .- -.-- .--- .-.. .-. --.. .-.. .--. -- -.-- . --- . --.- ... .--- .-- --- .--- --- -.-- -.- ..-. - -- --. ..- . .-.. -.-. --.. ..-. ... --- -. .. --. .- .-.. -. - . ... ..-. --.. .-.. .-. .- .- -- .-.. .-.. .-. -.-- --- -.-- -.- .-. --.. -. ...- --.. -.. .-.. -- ..-. .-.. --.- .... .--. ..-. ... -.. -.-- .-. - --.. -.-- . ... - -... -- - --.. -.-. -..- . .--. ..- --. .. .--. -. .- .- . --.. -.-- .... --.. .. .- ... .--. .-.. -.-. -.-. . .--- -.- -.-- .. -.-. --- - -... ... .-.. --- -.-. .-.. -. .-. -.-. .- .--. -.-- -.-- .--- -... .--- - .."), "")
+    test.run()
+    test_num += 1
 
 def main():
-    # Run the tests
-    create_menu()
+    # Create list of menu options
+    options = [MenuOption('Enter new ciphertext', ['new', 'n'], "enter_message"),
+                MenuOption('Get Help', ['help', 'h', '?'], "get_help"),
+                MenuOption('Run tests', ['test', 't'], "run_tests"),
+                MenuOption('Exit', ['exit', 'x', 'e'], "sys.exit")
+        ]
 
-    # Run the main program
-    #start()
+    # Create menu object
+    main_menu = Menu("Main Menu", options)
+    ciphertext = ""
+    plaintext = ""
+
+    while True:
+        # Display the main menu
+        main_menu.display()
+        # Get the user's command
+        command = get_user_input()
+        my_option = None
+        # Search for their command
+        for option in main_menu.getMenu_options():
+            if (command in option.getKeys()):
+                my_option = option
+                break
+
+        else:
+            # Command wasn't found
+            print("\nPlease enter a valid command!! Type 'h' for help...")
+        
+        # Run the command
+        if (my_option != None):
+            # Sort input for function
+            args = ""
+            if (my_option.getOption_name() == "Auto Decrypt"):
+                extra = ciphertext
+                args = "extra"
+
+            elif (my_option.getOption_name() == "Manual Decrypt"):
+                extra = ciphertext
+                args = "extra"
+
+            elif (my_option.getOption_name() == "Enter new ciphertext"):
+                extra = main_menu
+                args = "extra"
+
+            elif (my_option.getOption_name() == "Frequency graph"):
+                extra = ciphertext
+                args = "extra"
+
+            # Run function
+            output = eval(f"{my_option.getOption_function()}({args})")
+
+            # Deal with output from function
+            if (my_option.getOption_name() == "Enter new ciphertext"):
+                main_menu = output[0]
+                ciphertext = output[1]
+
+            elif (my_option.getOption_name() == "Auto Decrypt"):
+                plaintext = output
+                # Print the decrypted message
+                print(f"\nHere is your decrypted message: {plaintext}.")
+
+            elif (my_option.getOption_name() == "Manual Decrypt"):
+                plaintext = output
+                # Print the decrypted message
+                print(f"\nHere is your decrypted message: {plaintext}.")
 
 if __name__ == "__main__":
     main()

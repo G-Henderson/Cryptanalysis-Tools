@@ -7,23 +7,36 @@ class TranspositionSolver(CipherSolver):
     """
 
     def __init__(self) -> None:
+        # Initialise the super class
         super().__init__()
 
     def with_key(self, message: str, key: str) -> str:
+        """
+        Function for decrypting ciphertext from known key
+        """
+
+        # Setup empty variable to store the output
         output = ""
 
+        # Iterate through the message at intervals of the key length
         for i in range(0, len(message), len(key)):
+            # Get the current substring of key length characters
             sub_string = message[i:i+len(key)]
-            for j in range(len(key)):
+            # Iterate through the key
+            for char in key:
+                # Add the characters from the substring to the output
+                # in the key order
                 try:
-                    current_index = int(key[j])
+                    # Try using digits
+                    current_index = int(char)
                     try:
                         output += sub_string[current_index]
                     except:
                         pass
                 except:
+                    # Try using letters
                     ALPHABET = sorted(list(key))
-                    current_index = ALPHABET.index(key[j])
+                    current_index = ALPHABET.index(char)
                     try:
                         output += sub_string[current_index]
                     except:
@@ -33,6 +46,10 @@ class TranspositionSolver(CipherSolver):
         return output
 
     def with_keylen(self, message: str, keylen: int) -> str:
+        """
+        Function for decrypting ciphertext from known key length
+        """
+
         # Get the number of digits needed for the key
         my_digits = [str(i) for i in range(keylen)]
 
@@ -49,7 +66,6 @@ class TranspositionSolver(CipherSolver):
             current_permutation = "".join(perm)
             # Decrypt using that permutation
             decrypt = self.with_key(message, current_permutation)
-
             # Score the decryption
             current_score = self.quadgram_scorer.ngram_score(decrypt)
 
@@ -66,6 +82,10 @@ class TranspositionSolver(CipherSolver):
         return decrypt
 
     def brute_force(self, message: str) -> str:
+        """
+        Function for decrypting ciphertext from known key
+        """
+
         # Setup empty variable to store the best scoring message
         best_message = ""
         # Setup really low score as benchmark

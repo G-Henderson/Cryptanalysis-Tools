@@ -8,11 +8,12 @@ class SimpleSubSolver(CipherSolver):
     """
 
     def __init__(self) -> None:
+        # Initialise the super class
         super().__init__()
 
     def with_key(self, message: str, key: str) -> str:
         """
-        Function for dcecryting ciphertext from known key
+        Function for decrypting ciphertext from known key
         """
 
         # Convert the key into a list
@@ -36,6 +37,10 @@ class SimpleSubSolver(CipherSolver):
         return decrypt
 
     def brute_force(self, message) -> str:
+        """
+        Function for decrypting ciphertext using brute force
+        """
+        
         # Create random key to start with
         best_key = self.ALPHABET.copy()
         # Set the best score to really low number

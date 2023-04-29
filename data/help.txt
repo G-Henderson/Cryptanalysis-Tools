@@ -1,12 +1,11 @@
 ---- HELP ----
 
-Main menu:
+Main Menu:
 Available commands:
 -------------------
 
 exit, e, x          Quit the program
 help, h, ?          Displays help about this program
-load, l             Allows the user to load a message from the storage file
 new, n              Allows the user to enter a new ciphertext
 test, t             Runs the automated tests for the program
 
@@ -16,4 +15,20 @@ These options will become available once you've enter a ciphertext:
 auto, a             Attempts to automatically decrypt the ciphertext
 man, manual, m      Allows user to choose which cipher solver to use
 graph, g            Displays a graph comparing the letter frequencies of the message against English frequencies
-save, s             Saves the ciphertext and plaintext (if any) to the storage file
+
+
+Manual Solve Menu:
+Available commands:
+-------------------
+
+caesar, c           Solve using Caesar solver
+affine, a           Solve using Affine solver
+simple sub, s       Solve using Simple Substitution solver
+rail, r             Solve using Rail Fence solver
+trans, t            Solve using Basic Transposition solver
+col, ct             Solve using Columnar Transposition solver
+vigenere, v         Solve using Vigenere solver
+morse, m            Decode using Morse Code decoder
+help, h             Displays help about this program
+
+-------------------
