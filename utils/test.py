@@ -9,7 +9,7 @@ class Test(object):
 
     def setTest(self, my_test, expected_output) -> None:
         """
-        Takes the test
+        Sets the test
         """
 
         self.my_test = my_test
