@@ -45,6 +45,6 @@ class Test(object):
         result = self.test()
 
         if (result):
-            print("Passed")
+            print("PASSED")
         else:
-            print("Failed")
+            print("FAILED")
