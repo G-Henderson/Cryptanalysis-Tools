@@ -583,7 +583,7 @@ def main():
             # Check if digit
             if (command.isdigit()):
                 try:
-                    my_option = main_menu.getMenu_options()[int(command)]
+                    my_option = main_menu.getMenu_options()[int(command)-1]
                 except:
                     print("\nPlease enter a valid command!! Type 'h' for help...")
 
