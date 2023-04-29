@@ -42,9 +42,6 @@ class VigenereSolver(CipherSolver):
         # Setup trigram scorer instances
         self.trigram_scorer = NgramScorer(NgramFiles.TRIGRAM_FILE)
 
-        # Setup the alphabet as a final variable
-        self.ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
     def with_key(self, message: str, key: str) -> str:
         """
         Function for decrypting ciphertext from known key
@@ -72,7 +69,7 @@ class VigenereSolver(CipherSolver):
         best_list = BestList()
 
         # Find first 3 letters of key using permutations
-        for perm in self.get_permutations(list(self.ALPHABET), 3):
+        for perm in self.get_permutations(self.ALPHABET.copy(), 3):
             # Get the current key and pad with A's to make right keylen
             temp_key = ''.join(perm) + 'A' * (keylen - len(perm))
             # Try decrypting the with current key
@@ -161,7 +158,7 @@ class VigenereSolver(CipherSolver):
         # Return the decrypt
         return decrypt
 
-    def get_permutations(self, characters, permutation_length: int=None) -> list:
+    def get_permutations(self, characters: list, permutation_length: int=None) -> list:
         """
         Generates permutations of a specific length using the list of characters specified
         """
