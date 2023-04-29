@@ -64,7 +64,7 @@ class Menu:
         print(f"\n{self.menu_name}")
         print("Options:", end=" ")
         for count, option in enumerate(self.menu_options):
-            print(f"{count+1}. {option.getOption_name()} ({option.getKeys()[0]})", end=" ")
+            print(f"{count+1}. {option.getOption_name()} ({', '.join(option.getKeys())})", end=" ")
 
 def get_user_input(msg: str="Enter command:") -> str:
     """
